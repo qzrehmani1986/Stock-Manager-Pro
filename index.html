@@ -1,0 +1,1818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Business Stock Manager Pro</title>
+<style>
+:root{--bg:#f3f5f9;--card:#ffffff;--line:#edf0f5;--txt:#111827;--mut:#6b7280;--g:#0fa37f;--r:#e5484d;--ac:#0fa37f}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,"Noto Nastaliq Urdu",sans-serif;background:var(--bg);color:var(--txt);padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(140px + env(safe-area-inset-bottom,0px))}
+header{padding:14px 16px;font-weight:700;font-size:18px;display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap}
+.cards{padding:0 12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.card small{color:var(--mut);font-size:12px}
+.card b{display:block;font-size:17px;margin-top:4px}
+.pos{color:var(--g)}.neg{color:var(--r)}
+.nav{display:flex;gap:8px;overflow-x:auto;padding:12px;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav button{flex:0 0 auto;background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:10px 12px;font-size:13px;white-space:nowrap}
+.nav button.on{background:var(--ac);border-color:var(--ac)}
+main{padding:0 12px 90px}
+h3{margin:14px 0 8px;font-size:15px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:8px 4px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{color:var(--mut);font-weight:500}
+.row{display:flex;gap:8px;margin:8px 0;align-items:center;flex-wrap:wrap}
+input,select{background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:9px;font-size:14px;min-width:0}
+.btn{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:9px 12px;font-size:14px}
+.ghost{background:transparent;border:1px solid var(--line);color:var(--txt)}
+.danger{background:var(--r);width:100%;margin-top:6px}
+.del{background:none;border:0;color:var(--r);font-size:14px}
+.low{color:var(--r)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center}
+#modal.show{display:flex}
+#box{background:var(--card);width:100%;max-width:560px;max-height:90vh;overflow:auto;border-radius:16px 16px 0 0;padding:16px}
+.brand{color:var(--ac);font-weight:800;font-size:19px}
+.nav button{border-radius:20px !important}
+.nav button.on{color:#fff}
+.hero{background:linear-gradient(135deg,var(--c2,#1e2a3a),var(--ac,#0fa37f));color:#fff;border-radius:18px;padding:18px;margin-top:4px}
+.hero .hl{font-size:12px;letter-spacing:1px;opacity:.7}
+.hero .hv{font-size:30px;font-weight:700;margin:6px 0}
+.hero .hp{font-size:13px;font-weight:600;background:rgba(255,255,255,.12);display:inline-block;padding:4px 10px;border-radius:20px}
+.hero .hp.pos{color:#4ade80}.hero .hp.neg{color:#ff8a8a}
+.hero .hrow{display:flex;justify-content:space-between;margin-top:14px;border-top:1px solid rgba(255,255,255,.15);padding-top:12px}
+.hero small{opacity:.7;font-size:12px}
+.hero b{display:block;font-size:17px;margin-top:2px}
+.grid3{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.card{box-shadow:0 1px 3px rgba(0,0,0,.05)}
+#bnav{position:fixed;bottom:64px;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));z-index:5}
+#bnav button{background:none;border:0;color:var(--mut);font-size:11px;display:flex;flex-direction:column;align-items:center;gap:2px;flex:1}
+#bnav button.on{color:var(--ac);font-weight:600}
+#bnav i{font-style:normal;font-size:18px}
+.btn:active{transform:scale(.96);opacity:.8}
+.nav{display:none !important}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:80px;background:#111827;color:#fff;padding:10px 16px;border-radius:20px;font-size:14px;opacity:0;transition:opacity .3s;z-index:9;pointer-events:none;white-space:nowrap}
+.grid3>.card:last-child:nth-child(odd){grid-column:span 2}
+#splash{position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;z-index:20}
+#splash.show{display:flex}
+header .row .btn{padding:6px 7px;font-size:12px;white-space:nowrap}
+
+/* Full-screen pages: stay above the bottom tabs and the Netlify badge, with room at the bottom */
+#modal,#picker,#plist,#seov,#imp,#tbox,#authov,#tsheet{z-index:1000 !important}
+#box{max-height:100vh !important;height:100vh !important;border-radius:0 !important;padding-bottom:180px !important;box-sizing:border-box !important}
+#picker,#plist,#seov,#imp,#tbox,#authov{padding-bottom:110px !important;box-sizing:border-box !important}
+#picker{overflow-y:auto !important}
+#tsheet>div{padding-bottom:180px !important}
+.pdfrep{position:fixed;inset:0;z-index:3000;background:#fff;color:#000;overflow:auto;padding:14px;box-sizing:border-box;font-size:13px}
+.pdfrep table{width:100%;border-collapse:collapse}
+.pdfrep th,.pdfrep td{border-bottom:1px solid #ddd;padding:6px 4px;text-align:left;vertical-align:top}
+.pdfrep thead th{background:#f3f4f6}
+@media print{body>*:not(#pdfrep){display:none !important}#pdfrep{position:static !important;overflow:visible !important;padding:0 !important}.noprint{display:none !important}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-app-compat.js">const _renderBase=render;
+render=function(){_renderBase();applyLang();};
+applyLangDoc();
+render();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-auth-compat.js">const _renderBase=render;
+render=function(){_renderBase();applyLang();};
+applyLangDoc();
+render();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-firestore-compat.js">const _renderBase=render;
+render=function(){_renderBase();applyLang();};
+applyLangDoc();
+render();
+</script>
+</head>
+<body>
+<div id="authov" style="display:none;position:fixed;inset:0;z-index:2000;background:#f5ece8;padding:20px;box-sizing:border-box;overflow:auto">
+  <h3>Cloud login</h3>
+  <p style="color:var(--mut)">Data aapke account mein save hoga, aur kisi bhi device par login karke wahi data dikhega.</p>
+  <input id="aem" type="email" placeholder="Email" autocomplete="username" style="width:100%;margin-top:8px">
+  <input id="apw" type="password" placeholder="Password (kam se kam 6 akshar)" autocomplete="current-password" style="width:100%;margin-top:8px">
+  <button class="btn" onclick="authLogin()" style="width:100%;margin-top:10px">Login</button>
+  <button class="btn ghost" onclick="authSignup()" style="width:100%;margin-top:8px">Naya account banayein</button>
+  <button class="btn ghost" onclick="authLocal()" style="width:100%;margin-top:8px">Bina login ke (sirf is browser mein)</button>
+  <div id="authinfo" style="margin-top:12px;color:var(--mut);font-size:13px"></div>
+</div>
+<header>
+  <span class="brand" id="brandWrap" style="display:flex;align-items:center;gap:8px"><span id="brandLogo"></span><span id="brandT">Stock Manager Pro</span></span>
+  <span class="row" style="margin:0;flex-wrap:nowrap;gap:4px"><button class="btn ghost" onclick="cycleLang()" style="font-size:12px;padding:6px 8px">RU</button>
+    <button class="btn ghost" onclick="showAuth()">Cloud</button><button class="btn ghost" onclick="backup()">Backup</button><button class="btn ghost" onclick="restoreData()">Restore</button>
+    <button class="btn ghost" onclick="demo()">Demo</button>
+    <button class="btn ghost" onclick="reset()">Reset</button>
+  </span>
+</header>
+<div class="cards" id="cards"></div>
+<div class="nav" id="nav"></div>
+<main id="main"></main>
+<div id="splash"></div>
+<div id="toast"></div>
+<div id="bnav"></div>
+<div id="modal"><div id="box"></div></div>
+
+<script>
+const KEY='bsmp_v1',$=i=>document.getElementById(i),sum=a=>a.reduce((x,y)=>x+y,0);
+const fmt=n=>'Rs '+Math.round(n||0).toLocaleString('en-PK');
+const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36);
+const dstr=s=>new Date(s).toLocaleDateString('en-GB',{timeZone:'Asia/Karachi'});
+const todayKey=()=>new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Karachi'});
+const blank=()=>({products:[],customers:[],suppliers:[],holders:[],txns:[],cash:0,bank:0,auth:0});
+let LANG=localStorage.getItem('smp_lang')||'rur';
+let S;try{S=JSON.parse(localStorage.getItem(KEY))||blank()}catch(e){S=blank()}
+function migrateFree(){
+  let n=0;
+  (S.txns||[]).forEach(t=>{if(t.type=='adjust'&&t.dir<0&&!t.rv){const cp=S.customers.find(x=>x.id==t.pid||x.name==t.party);if(cp)cp.bal+=t.total;t.rv=true;n++;}});
+  return n;
+}
+migrateFree();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(typeof cloudQueue=='function')cloudQueue();};
+const money=(m,a)=>{if(m=='bank')S.bank+=a;else S.cash+=a;};
+const addTx=(type,total,method,party,x={})=>{const t={id:uid(),type,total,method,party,day:todayKey(),date:new Date().toISOString(),...x};S.txns.push(t);return t;};
+window.alert=m=>{
+  const se=document.getElementById('seov');if(se){let e=document.getElementById('semsg');if(!e){e=document.createElement('div');e.id='semsg';e.style.cssText='background:#fde2e2;color:#b00020;padding:10px;border-radius:10px;margin:8px 0;font-weight:600';se.prepend(e);}e.textContent=String(m);return;}
+  const msg=String(m),md=document.getElementById('modal'),box=document.getElementById('box');
+  if(md&&md.classList.contains('show')&&box){
+    let e=document.getElementById('mmsg');
+    if(!e){e=document.createElement('div');e.id='mmsg';e.style.cssText='background:#fde2e2;color:#b00020;padding:10px 12px;border-radius:10px;margin:10px 0;font-size:14px;font-weight:600';box.appendChild(e);}
+    e.textContent=msg;e.scrollIntoView({block:'nearest'});
+  }else toast(msg);
+};
+let view='dash',cart=[],__save=()=>{};
+
+const TABS=[['dash','HOME','🏠'],['cash','CASH','💵'],['bank','BANK','🏦'],['sales','SALES','🧾'],['purchase','PURCHASE','🛒'],['expenses','EXPENSES','💸'],['customers','CUSTOMERS','👥'],['suppliers','SUPPLIERS','🚚'],['products','PRODUCTS','📦'],['stock','STOCK','📊'],['investment','INVESTMENT','💹'],['shares','SHARES','📈'],['pl','PROFIT & LOSS','📑']];
+
+function openParty(k,id){window.__pk=k;window.__pid=id;view='pdetail';render();}
+function ledgerRows(list){
+  return list.length?list.map(r=>`<div onclick="editTx('${r.id}')" style="display:grid;grid-template-columns:1.4fr 1fr 1fr;align-items:center;padding:8px 0;border-bottom:1px solid #eee;font-size:13px;cursor:pointer">
+    <div><div style="color:var(--mut);font-size:12px">${esc(r.when)}</div><span style="display:inline-block;margin-top:4px;background:#fde8e8;color:#b00020;border-radius:6px;padding:2px 6px;font-size:12px">Bal. ${fmt(r.after)}</span></div>
+    <div style="text-align:right;color:#d62828;font-weight:600">${r.give?fmt(r.give):''}</div>
+    <div style="text-align:right;color:#16a34a;font-weight:600">${r.got?fmt(r.got):''}</div></div>`).join(''):'<p style="color:var(--mut);margin-top:12px">Koi entry nahi</p>';
+}
+function custSearch(q){
+  q=(q||'').trim().toLowerCase();
+  const list=(window.__led||[]).filter(r=>!q||r.when.toLowerCase().includes(q)||String(r.give||r.got).includes(q));
+  $('ledger').innerHTML=ledgerRows(list);
+}
+function openFreeEntry(id,dir){
+  const c=S.customers.find(x=>x.id==id);if(!c)return;
+  form('Free entry: '+c.name,[
+    {k:'t',l:'Type',o:[['-1','Aapne diye (cash bahar)'],['1','Aapko mile (cash andar)']],v:String(dir||-1)},
+    {k:'a',l:'Amount (Rs)',t:'number',v:''},
+    {k:'m',l:'Cash / Bank',o:ACC,v:'cash'},
+    {k:'n',l:'Note (optional)',v:''}],v=>{
+    const a=+v.a,d=+v.t;
+    if(!(a>0))return alert('Amount likhein');
+    if(d<0&&S[v.m]<a)return alert('Itne paise '+v.m+' mein nahi hain');
+    money(v.m,d*a);if(d<0)c.bal+=a;
+    addTx('adjust',a,v.m,c.name,{pid:c.id,dir:d,free:true,rv:d<0,note:v.n||''});
+    save();closeM();render();
+  });
+}
+function custSale(id){
+  const c=S.customers.find(x=>x.id==id);if(!c)return;
+  view='sales';window.__inl='sale';cart=[];render();
+  setTimeout(()=>{$('ptyq').value=c.name;$('pty').value=c.id;fillRate();drawCart('sale');},0);
+}
+function custPage(p){
+  const rows=S.txns.filter(t=>t.party==p.name&&(t.type=='sale'||t.type=='receipt'||(t.type=='adjust'&&t.pid==p.id))).map(t=>{
+    const adj=t.type=='adjust';
+    const give=adj?(t.dir<0?t.total:0):t.type=='sale'?(t.due!==undefined?t.due:(t.method=='credit'?t.total:0)):0;
+    const got=adj?(t.dir>0?t.total:0):t.type=='receipt'?t.total:0;
+    const when=(t.day||'')+(t.date?' • '+new Date(t.date).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}):'');
+    return {id:t.id,when,give,got,delta:adj?0:give-got};
+  }).filter(r=>r.give||r.got);
+  let bal=p.bal;
+  const out=rows.slice().reverse().map(r=>{const row={...r,after:bal};bal-=r.delta;return row;});
+  window.__led=out;
+  const head=p.bal>0?'Aapko mile ge':p.bal<0?'Aapne dene hain':'Koi baqi nahi';
+  const col=p.bal>0?'#d62828':p.bal<0?'#16a34a':'#111827';
+  return `<div class="row" style="justify-content:space-between"><button class="btn ghost" onclick="view='customers';render()">← Back</button><b>${esc(p.name)}</b><button class="btn ghost" onclick="editParty('c','${p.id}')">Edit</button></div>
+  <div class="card" style="margin-top:12px"><small style="color:var(--mut)">${head}</small><b style="display:block;font-size:24px;color:${col}">${fmt(Math.abs(p.bal))}</b></div>
+  <button class="btn ghost" style="width:100%;margin-top:10px" onclick="formPay('c','${p.id}')">Udhaar receive karein</button>
+  <div class="row" style="margin-top:10px"><button class="btn ghost" onclick="sendSMS('c','${p.id}')">SMS bhejein</button><button class="btn ghost" onclick="sendWA('c','${p.id}')">WhatsApp</button></div>
+  <input placeholder="Talash krein" oninput="custSearch(this.value)" style="width:100%;margin-top:12px">
+  <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr;margin-top:12px;font-size:12px;color:var(--mut);font-weight:600"><span>Entries</span><span style="text-align:right">AAPNE DIYE</span><span style="text-align:right">AAPKO MILE</span></div>
+  <small style="color:var(--mut)">Entry par tap karke edit ya delete karein</small>
+  <div id="ledger">${ledgerRows(out)}</div>
+  <div style="position:sticky;bottom:0;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;background:var(--bg,#f2f4f7);padding:8px 0">
+    <button onclick="openFreeEntry('${p.id}',-1)" style="border:0;border-radius:24px;padding:14px;font-size:16px;font-weight:600;color:#fff;background:linear-gradient(90deg,#7f1d1d,#b91c1c)">AAPNE DIYE</button>
+    <button onclick="openFreeEntry('${p.id}',1)" style="border:0;border-radius:24px;padding:14px;font-size:16px;font-weight:600;color:#fff;background:linear-gradient(90deg,#14532d,#16a34a)">AAPKO MILE</button>
+  </div>`;
+}
+function partyPage(){
+  const k=window.__pk,p=(k=='c'?S.customers:S.suppliers).find(x=>x.id==window.__pid);
+  if(!p){view='suppliers';return '';}
+  if(k=='c')return custPage(p);
+  const txs=S.txns.filter(t=>t.party==p.name).slice().reverse().slice(0,50);
+  const lbl=k=='c'?'Receivable':'Payable';
+  return `<div class="row" style="justify-content:space-between"><button class="btn ghost" onclick="view='${k=='c'?'customers':'suppliers'}';render()">← Back</button><b>${esc(p.name)}</b><span></span></div>
+  <div class="card" style="margin-top:10px"><small>${lbl}</small><b class="${k=='c'?'pos':'neg'}">${fmt(p.bal)}</b></div>
+  <div class="row" style="margin-top:10px"><button class="btn" style="background:#000;color:#fff;border:0" onclick="formPay('${k}','${p.id}')">${k=='c'?'Receive':'Pay'}</button>${k=='s'?`<button class="btn ghost" onclick="rateMgr('${p.id}')">Rates</button>`:''}<button class="btn ghost" onclick="sendSMS('${k}','${p.id}')">SMS</button><button class="btn ghost" onclick="sendWA('${k}','${p.id}')">WhatsApp</button><button class="btn ghost" onclick="editParty('${k}','${p.id}')">Edit</button></div>
+  <h3>Transactions</h3>
+  ${txs.length?`<table>${txs.map(t=>`<tr><td>${(t.day||'')}</td><td>${esc(t.type)}</td><td>${esc(t.method||'')}</td><td style="text-align:right">${fmt(t.total)}</td></tr>`).join('')}</table>`:'<p style="color:var(--mut)">Koi transaction nahi</p>'}`;
+}
+function sharesBlock(c){
+  return `<div class="row">Authorized shares: <input id="auth" type="number" value="${S.auth}" style="width:120px"><button class="btn" onclick="setAuth($('auth').value);render()">Save</button></div>
+    <p>Issued: ${c.issued} · Share price: ${fmt(c.price)}</p>
+    <div class="row"><button class="btn" onclick="formIssue()">Issue shares</button><button class="btn ghost" onclick="formSell()">Sell shares</button><button class="btn ghost" onclick="formDivide()">Shares mein divide karein</button><button class="btn" onclick="openDist()">Distribute Profit</button></div>
+    <table><tr><th>Shareholder</th><th>Shares</th><th>Owner %</th><th>Value</th></tr>
+    ${S.holders.map(h=>`<tr><td>${h.name}</td><td>${h.n}</td><td>${c.issued?(h.n/c.issued*100).toFixed(2):0}%</td><td>${fmt(h.n*c.price)}</td></tr>`).join('')}</table>`;
+}
+function calc(){
+  const T=S.txns,ty=t=>T.filter(x=>x.type==t),tot=l=>sum(l.map(x=>x.total));
+  const sales=ty('sale').filter(x=>!x.free),freeAdj=sum(ty('sale').filter(x=>x.free).map(x=>x.total))+sum(ty('adjust').filter(x=>x.dir>0).map(x=>x.total))-sum(ty('buyback').map(x=>x.total)),rev=tot(sales),cogs=sum(sales.map(x=>x.cogs)),exp=tot(ty('expense'));
+  const capital=tot(ty('capital')),wd=tot(ty('withdrawal'));
+  const dist=tot(ty('distribution'))-tot(ty('distrev'));const profit=rev-cogs-exp,equity=capital+profit-wd-dist+freeAdj;
+  const stock=sum(S.products.map(p=>p.stock*p.buy)),recv=sum(S.customers.map(c=>c.bal)),pay=sum(S.suppliers.map(s=>s.bal));
+  const cb=S.cash+S.bank,worth=cb+stock+recv-pay;
+  const tt=T.filter(x=>x.day==todayKey());
+  const tp=sum(tt.filter(x=>x.type=='sale'&&!x.free).map(x=>x.total-x.cogs))-sum(tt.filter(x=>x.type=='expense').map(x=>x.total));
+  const issued=sum(S.holders.map(h=>h.n)),price=issued?(equity+dist)/issued:1;
+  return {rev,cogs,exp,capital,wd,profit,equity,stock,recv,pay,cb,worth,tp,issued,price,retained:profit-wd,dist,distributable:Math.max(0,profit-wd)};
+}
+
+function cards(c){
+  if(view!='dash'){$('cards').innerHTML='';return;}
+  const cd=(l,v,cls='')=>`<div class="card"><small>${l}</small><b class="${cls}">${v}</b></div>`;
+  const pct=c.tp/Math.max(c.capital,1)*100;
+  $('cards').innerHTML=dashLogo()+`<div class="hero" onclick="go('shares')" style="cursor:pointer"><div class="hl">SHARE PRICE</div><div class="hv">Rs ${c.price.toFixed(2)}</div>
+  <span class="hp ${c.tp>=0?'pos':'neg'}">${c.tp>=0?'▲':'▼'} ${fmt(Math.abs(c.tp))} (${pct.toFixed(2)}%) today</span>
+  <div class="hrow"><div><small>Invested</small><b>${fmt(c.capital)}</b></div><div><small>Buying Power</small><b>${fmt(S.cash)}</b></div></div></div>
+  <div class="grid3"><div class="card"><small>Stock Value</small><b>${fmt(c.stock)}</b><small style="display:block;color:var(--mut)">Expected profit: <b class="pos" style="font-size:12px">${fmt(sum(S.products.map(p=>p.stock*(p.sell-p.buy))))}</b></small><small style="display:block;color:var(--mut)">All-time purchase: <b style="font-size:12px;color:#d4a017">${fmt(sum(S.txns.filter(t=>t.type=='purchase').map(t=>t.total)))}</b></small></div><div class="card"><small>All time profit</small><b class="${c.rev-c.cogs>=0?'pos':'neg'}">${fmt(c.rev-c.cogs)}</b><small style="display:block;color:var(--mut)">All-time sale: <b style="font-size:12px;color:#d4a017">${fmt(c.rev)}</b></small><small style="display:block;color:var(--mut)">Expenses: <b class="neg" style="font-size:12px">${fmt(c.exp)}</b></small><small style="display:block;color:var(--mut)">Distributed: <b style="font-size:12px">${fmt(c.dist)}</b></small></div>${cd('Receivables',fmt(c.recv),'pos')}${cd('Payables',fmt(c.pay),'neg')}</div>`;
+}
+function oldCards(c){
+  const cd=(l,v,cls='')=>`<div class="card"><small>${l}</small><b class="${cls}">${v}</b></div>`;
+  $('cards').innerHTML=
+    cd('Net Worth',fmt(c.worth),c.worth>=0?'pos':'neg')+
+    cd('Total Business Investment',fmt(c.capital))+
+    cd('Current Business Valuation',fmt(c.equity))+
+    cd('Total Share Value',fmt(c.issued*c.price))+
+    cd("Today's P/L",`${fmt(c.tp)} <small>(${(c.tp/Math.max(c.capital,1)*100).toFixed(2)}%)</small>`,c.tp>=0?'pos':'neg')+
+    cd('Cash & Bank',fmt(c.cb))+
+    cd('Stock Value',fmt(c.stock))+
+    cd('Receivables',fmt(c.recv),'pos')+
+    cd('Payables',fmt(c.pay),'neg');
+}
+
+const tbl=l=>l.length?`<table><tr><th>Date</th><th>Type</th><th>Party</th><th style="text-align:right">Amount</th><th></th></tr>${l.slice(0,50).map(t=>`<tr><td>${dstr(t.date)}</td><td>${t.type}</td><td>${t.party||''}</td><td style="text-align:right">${fmt(t.total)}<br><small>${t.method||''}</small></td><td><button class="btn ghost" onclick="editTx('${t.id}')">Edit</button></td></tr>`).join('')}</table>`:'<p style="color:var(--mut)">No records yet.</p>';
+const kind=(...ts)=>S.txns.filter(t=>ts.includes(t.type)).reverse();
+
+function partyTable(k){
+  const isC=k=='c', ALL=isC?S.customers:S.suppliers;
+  const pf=window.__pf||{f:'all',s:'new'};
+  let L=ALL.slice();
+  if(pf.f=='lene')L=L.filter(p=>p.bal>0);
+  else if(pf.f=='dene')L=L.filter(p=>p.bal<0);
+  else if(pf.f=='bar')L=L.filter(p=>Math.abs(p.bal)<0.001);
+  if(pf.s=='new')L.reverse();
+  else if(pf.s=='big')L.sort((a,b)=>Math.abs(b.bal)-Math.abs(a.bal));
+  else if(pf.s=='small')L.sort((a,b)=>Math.abs(a.bal)-Math.abs(b.bal));
+  else if(pf.s=='az')L.sort((a,b)=>a.name.localeCompare(b.name));
+  else if(pf.s=='za')L.sort((a,b)=>b.name.localeCompare(a.name));
+  const owedToUs=sum(S.customers.filter(x=>x.bal>0).map(x=>x.bal));
+  const weOwe=sum(S.suppliers.filter(x=>x.bal>0).map(x=>x.bal));
+  const tab=(key,label)=>`<button onclick="go('${key}')" style="background:none;border:0;color:#fff;font-size:16px;padding:8px 2px;opacity:${(key=='customers')==isC?1:.7};border-bottom:${(key=='customers')==isC?'3px solid #fde68a':'3px solid transparent'}">${label}</button>`;
+  const ini=n=>(n||'?').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  const rowsH=L.map(p=>{
+    const last=S.txns.filter(t=>t.party==p.name).slice(-1)[0];
+    const when=last?dstr(last.date||last.day):'';
+    const amtCol=p.bal>0?(isC?'#dc2626':'#16a34a'):'#6b7280';
+    const lbl=p.bal>0?(isC?'Aapko milenge':'Aapko denge'):'Hisaab barabar';
+    return `<div data-n="${p.name}" onclick="openParty('${k}','${p.id}')" style="display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid #eee;cursor:pointer">
+      <div onclick="event.stopPropagation();pickPartyPic('${k}','${p.id}')" style="width:46px;height:46px;border-radius:12px;background:#eef0f3;display:flex;align-items:center;justify-content:center;font-weight:700;color:#555;flex:0 0 auto;overflow:hidden;cursor:pointer">${p.pic?`<img src="${p.pic}" style="width:46px;height:46px;object-fit:cover">`:ini(p.name)}</div>
+      <div style="flex:1;min-width:0"><div data-keep style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</div><small style="color:var(--mut)">${when}</small></div>
+      <div style="text-align:right;flex:0 0 auto"><b style="color:${amtCol}">${fmt(Math.abs(p.bal))}</b><br><small style="color:var(--mut)">${lbl}</small></div>
+    </div>`;
+  }).join('');
+  return `<div style="background:linear-gradient(90deg,#e8462a,#f29a2e);margin:-12px -12px 0;padding:12px 14px 10px;border-radius:0 0 18px 18px">
+    <div class="row" style="justify-content:space-between;color:#fff;gap:8px">
+      <button onclick="go('dash')" style="background:none;border:0;color:#fff;font-size:22px">←</button>
+      <b style="font-size:20px;color:#fff">Party</b>
+      <div style="display:flex;gap:6px"><button onclick="importParties('${k}')" style="background:#fff3;border:0;color:#fff;border-radius:10px;padding:8px 10px">Import</button><button onclick="pdfReport('${k}')" style="background:#fff3;border:0;color:#fff;border-radius:10px;padding:8px 12px">PDF</button></div>
+    </div>
+    <div style="display:flex;gap:18px;margin-top:6px">${tab('customers','Customers')}${tab('suppliers','Suppliers')}</div>
+  </div>
+  <div style="background:#fff;border-radius:14px;margin-top:14px;padding:12px;display:flex;justify-content:space-around;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08)">
+    <div><b style="color:#16a34a;font-size:18px">${fmt(weOwe)}</b><br><small style="color:var(--mut)">Aapko dene hain</small></div>
+    <div style="border-left:1px solid #eee"></div>
+    <div><b style="color:#dc2626;font-size:18px">${fmt(owedToUs)}</b><br><small style="color:var(--mut)">Aapko mile ge</small></div>
+  </div>
+  <div class="row" style="margin-top:12px"><input placeholder="${ALL.length} ${isC?'Customers':'Suppliers'}" oninput="fl(this.value)" style="flex:1"><button onclick="openPartyFilter('${k}')" style="border:0;background:#fff;border-radius:10px;padding:10px 12px;color:#e8462a;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.1)">Filter</button></div>
+  <div style="margin-top:6px">${rowsH||'<p style="color:var(--mut)">Abhi koi nahi</p>'}</div>
+  <button onclick="formParty('${k}')" style="position:fixed;right:16px;bottom:150px;z-index:20;border:0;border-radius:28px;padding:14px 18px;background:linear-gradient(90deg,#e8462a,#f29a2e);color:#fff;font-weight:700;box-shadow:0 4px 12px rgba(0,0,0,.2)">+ ${isC?'ADD CUSTOMER':'ADD SUPPLIER'}</button>`;
+}
+
+const V={
+  dash:c=>V.investment(c).replace(sharesBlock(c),''),
+  cash:c=>`<h3>Cash in hand: ${fmt(S.cash)} · Bank: ${fmt(S.bank)}</h3><div class="row"><button class="btn ghost" onclick="openImport()">Statement import (CSV)</button></div><h3>Bank accounts</h3><div class="row"><button class="btn" onclick="formBank()">+ Bank account</button></div>${bankList()}
+    <div class="row"><button class="btn" onclick="formMoney('transfer')">Transfer cash↔bank</button><button class="btn" onclick="formMoney('withdrawal')">Owner withdrawal</button><button class="btn" onclick="formMoney('capital')">Add capital</button></div>
+    <h3>Cash & bank movements</h3>${tbl(kind('receipt','payment','expense','withdrawal','capital','transfer','distribution','distrev'))}`,
+  sales:c=>window.__inl=='sale'?saleBody('sale'):`${tradeTabs('sale')}<div class="row"><button class="btn" onclick="openCart('sale')">+ New sale</button><button class="btn ghost" onclick="pdfReport('sale')">PDF</button></div>${tbl(kind('sale'))}`,
+  purchase:c=>window.__inl=='purchase'?saleBody('purchase'):`${tradeTabs('purchase')}<div class="row"><button class="btn" onclick="openCart('purchase')">+ New purchase</button><button class="btn ghost" onclick="pdfReport('purchase')">PDF</button></div>${tbl(kind('purchase'))}`,
+  expenses:c=>`<div class="row"><button class="btn" onclick="formExp()">+ Add expense</button></div>${tbl(kind('expense'))}`,
+  customers:c=>partyTable('c'),
+  suppliers:c=>partyTable('s'),
+  pdetail:c=>partyPage(),
+  products:c=>`<div class="row"><button class="btn" onclick="formProd()">+ Product</button><button class="btn ghost" onclick="importProducts()">Import CSV</button><button class="btn" onclick="catMgr()">Categories</button><input placeholder="Search name / category" oninput="fl(this.value)" style="flex:1"></div>
+    <table><tr><th>Product</th><th>Stock</th><th>Buy</th><th>Sell</th><th></th></tr>
+    ${S.products.map(p=>`<tr data-n="${p.name} ${p.cat}"><td>${p.img?`<img src="${p.img}" style="width:32px;height:32px;border-radius:6px;object-fit:cover;vertical-align:middle;margin-right:6px">`:''}<b>${p.name}</b><br><small>${p.cat} · ${p.unit}</small></td><td class="${p.stock<=p.min?'low':''}">${p.stock}</td><td>${fmt(p.buy)}</td><td>${fmt(p.sell)}</td><td><button class="btn ghost" onclick="formProd('${p.id}')">Edit</button></td></tr>`).join('')}</table>`,
+  stock:c=>`<h3>Stock valuation: ${fmt(c.stock)}</h3><h3>Low-stock alerts</h3>
+    ${S.products.filter(p=>p.stock<=p.min).map(p=>`<div class="row low">⚠ ${p.name}: ${p.stock} ${p.unit} (min ${p.min})</div>`).join('')||'<p>All stock levels OK.</p>'}`,
+  investment:c=>`<div class="grid3" style="margin-top:0">
+    
+    <div class="card"><small>Realized net profit</small><b class="${c.profit>=0?'pos':'neg'}">${fmt(c.profit)}</b></div>
+    <div class="card"><small>Retained profit</small><b>${fmt(c.retained)}</b></div>
+    
+    <div class="card"><small>Total business equity</small><b>${fmt(c.equity)}</b></div>
+    <div class="card"><small>Available cash</small><b>${fmt(S.cash)}</b></div></div>
+    ${sharesBlock(c)}`,
+  shares:c=>candles(),
+  pl:c=>`<table>
+    <tr><td>Sales revenue</td><td>${fmt(c.rev)}</td></tr>
+    <tr><td>Cost of goods sold</td><td>−${fmt(c.cogs)}</td></tr>
+    <tr><td><b>Gross profit</b></td><td>${fmt(c.rev-c.cogs)}</td></tr>
+    <tr><td>Expenses</td><td>−${fmt(c.exp)}</td></tr>
+    <tr><td><b>Realized net profit</b></td><td class="${c.profit>=0?'pos':'neg'}">${fmt(c.profit)}</td></tr></table>
+    <h3>Balance sheet</h3><table>
+    <tr><td>Cash & bank</td><td>${fmt(c.cb)}</td></tr>
+    <tr><td>Stock</td><td>${fmt(c.stock)}</td></tr>
+    <tr><td>Receivables</td><td>${fmt(c.recv)}</td></tr>
+    <tr><td>Payables</td><td>−${fmt(c.pay)}</td></tr>
+    <tr><td><b>Equity</b></td><td>${fmt(c.equity)}</td></tr></table>
+    <p style="color:var(--mut)">Balance check: ${Math.abs(c.worth-c.equity)<1?'Balanced ✓':'MISMATCH'}</p>
+    <div class="row"><button class="btn" onclick="csv()">Export transactions CSV</button></div>`
+};
+V.more=c=>`<h3>All sections</h3><div class="grid3" style="grid-template-columns:1fr 1fr 1fr"><div class="card" onclick="go('activity')" style="text-align:center;cursor:pointer"><div style="font-size:22px">🧾</div><small>ALL ACTIVITY</small></div><div class="card" onclick="go('dist')" style="text-align:center;cursor:pointer"><div style="font-size:22px">💰</div><small>PROFIT DIST.</small></div><div class="card" onclick="go('brand')" style="text-align:center;cursor:pointer"><div style="font-size:22px">🎨</div><small>APP BRANDING</small></div>${TABS.slice(1).map(([k,l,i])=>`<div class="card" onclick="go('${k}')" style="text-align:center;cursor:pointer"><div style="font-size:22px">${i}</div><small>${l}</small></div>`).join('')}</div>
+<h3>Data</h3><div class="row"><button class="btn" onclick="backup()">Backup</button><button class="btn ghost" onclick="restoreData()">Restore backup</button><button class="btn" onclick="csv()">Export CSV</button><button class="btn ghost" onclick="demo()">Demo data</button><button class="btn" style="background:var(--r)" onclick="reset()">Reset</button></div>`;
+V.activity=c=>`<h3>Tamam entries</h3><table><tr><th>Date</th><th>Type</th><th>Party</th><th style="text-align:right">Amount</th><th></th></tr>${S.txns.slice().reverse().map(t=>`<tr onclick="goOrigin('${t.id}')" style="cursor:pointer"><td>${dstr(t.date)}</td><td>${t.type}</td><td>${t.party||''}</td><td style="text-align:right">${fmt(t.total)}<br><small>${t.method||''}</small></td></tr>`).join('')}</table>`;
+V.bank=c=>V.cash(c);
+
+function render(){
+  const c=calc();cards(c);
+  $('nav').innerHTML=TABS.map(([k,l,i])=>`<button class="${k==view?'on':''}" onclick="go('${k}')">${i} ${l}</button>`).join('');
+  $('main').innerHTML=V[view](c);
+  const G={dash:'dash',investment:'dash',customers:'customers',sales:'sales',purchase:'sales',cash:'cash',bank:'cash'},g=G[view]||'more';
+  $('bnav').innerHTML=[['dash','🏠','Home'],['customers','👥','Customers'],['sales','⇄','Trade'],['cash','👛','Wallet'],['more','☰','More']].map(([k,i,l])=>`<button class="${g==k?'on':''}" onclick="go('${k}')"><i>${i}</i>${l}</button>`).join('');
+}
+function go(k){
+  const fromOther=!['sales','purchase'].includes(view);
+  view=k;
+  if(k=='sales'&&fromOther){window.__inl='sale';cart=[];}
+  render();
+  if((k=='sales'&&window.__inl=='sale')||(k=='purchase'&&window.__inl=='purchase'))setTimeout(()=>{fillRate();drawCart(window.__inl);},0);
+}
+function fl(q){q=q.toLowerCase();document.querySelectorAll('[data-n]').forEach(r=>r.style.display=r.dataset.n.toLowerCase().includes(q)?'':'none');}
+
+// ---------- modal helpers ----------
+function openModal(title,body){$('box').innerHTML=`<div class="row" style="justify-content:space-between"><b>${title}</b><button class="btn" style="padding:6px 12px" onclick="__save()">Save</button><button class="btn ghost" onclick="closeM()">✕</button></div>${body}`;if(window.__fullBox)$('box').style.cssText='max-height:100vh;height:100vh;border-radius:0;max-width:none;';$('modal').classList.add('show');}
+function closeM(){window.__canSave=false;window.__fullBox=false;$('box').style.cssText='';$('modal').classList.remove('show');}
+$('modal').onclick=e=>{if(e.target.id=='modal')closeM();};
+function form(title,fields,onSave,extra=''){
+  window.__canSave=true;
+  openModal(title,fields.map(f=>`<div style="margin:6px 0"><small style="color:var(--mut)">${f.l}</small><br>${f.o?`<select id="f_${f.k}" style="width:100%">${f.o.map(o=>`<option value="${o[0]}" ${o[0]==f.v?'selected':''}>${o[1]}</option>`).join('')}</select>`:`<input id="f_${f.k}" type="${f.t||'text'}" value="${f.v??''}" style="width:100%" ${f.dl?`list="dl_${f.k}"`:''}>${f.dl?`<datalist id="dl_${f.k}">${f.dl.map(x=>`<option value="${esc(x)}">`).join('')}</datalist>`:''}`}</div>`).join('')+extra+`<button class="btn" style="width:100%;margin-top:10px" onclick="__save()">Save</button>`);
+  __save=()=>{const v={};fields.forEach(f=>v[f.k]=$('f_'+f.k).value);onSave(v);};
+}
+const ACC=[['cash','Cash'],['bank','Bank']];
+
+// ---------- products ----------
+function formProd(pid){
+  __pimg=null;
+  const p=S.products.find(x=>x.id==pid)||{name:'',cat:'Papad',unit:'pkt',buy:0,sell:0,stock:0,min:5};
+  form(pid?'Edit product':'New product',[
+    {k:'name',l:'Name (English / Urdu)',v:p.name},{k:'cat',l:'Category',o:catOpts(p.cat),v:p.cat},{k:'unit',l:'Unit',o:[...new Set(['pkt','ctn','box',p.unit])].map(u=>[u,u]),v:p.unit},
+    {k:'buy',l:'Purchase price',t:'number',v:p.buy},{k:'sell',l:'Selling price',t:'number',v:p.sell},
+    {k:'stock',l:'Current stock',t:'number',v:p.stock},{k:'min',l:'Low-stock alert at',t:'number',v:p.min}],
+  v=>{
+    const x={name:v.name.trim(),cat:v.cat,unit:v.unit,buy:+v.buy||0,sell:+v.sell||0,stock:+v.stock||0,min:+v.min||0,img:__pimg||(pid?p.img:'')||''};
+    if(!x.name)return alert('Name required');
+    const old=pid?{buy:p.buy,stock:p.stock}:{buy:0,stock:0};
+    const delta=x.stock*x.buy-old.stock*old.buy;
+    if(pid)Object.assign(p,x);else S.products.push({id:uid(),...x});
+    if(Math.abs(delta)>0.001)addTx('capital',delta,'stock','Stock adjustment: '+x.name);
+    save();closeM();render();
+  },`<div class="row"><small style="color:var(--mut)">Photo</small><input type="file" accept="image/png,image/jpeg,image/webp" onchange="pimgSel(this)"><img id="pprev" src="${p.img||''}" style="width:44px;height:44px;border-radius:8px;object-fit:cover"></div>`+(pid?`<button class="btn danger" onclick="delProd('${pid}')">Delete product</button>`:''));
+}
+function delProd(pid){
+  const p=S.products.find(x=>x.id==pid);if(!p)return;
+  if(!confirm('Delete '+p.name+'? Its stock value is written off against capital.'))return;
+  const d=-p.stock*p.buy;if(Math.abs(d)>0.001)addTx('capital',d,'stock','Written off: '+p.name);
+  S.products=S.products.filter(x=>x.id!=pid);save();closeM();render();
+}
+
+// ---------- sales & purchases (cart) ----------
+function tradeTabs(k){
+  const on=k=='purchase';
+  return `<div style="position:relative;display:flex;background:#e6e9ef;border-radius:24px;padding:4px;margin:0 0 12px;user-select:none">
+  <div id="tabind" style="position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:20px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.15);transition:transform .25s ease;transform:translateX(${(window.__tabFrom?window.__tabFrom=='purchase':on)?'100%':'0'})"></div>
+  <button onclick="switchTrade('sale')" style="flex:1;position:relative;border:0;background:none;padding:8px;font-weight:600;color:${on?'#6b7280':'#111827'}">Sale</button>
+  <button onclick="switchTrade('purchase')" style="flex:1;position:relative;border:0;background:none;padding:8px;font-weight:600;color:${on?'#111827':'#6b7280'}">Purchase</button>
+  </div>`;
+}
+function switchTrade(k){
+  if(window.__inl===k)return;
+  const ind=document.getElementById('tabind');
+  if(ind)ind.style.transform=k=='purchase'?'translateX(100%)':'translateX(0)';
+  const apply=()=>{
+    view=k=='sale'?'sales':'purchase';window.__inl=k;cart=[];
+    render();
+    setTimeout(()=>{fillRate();drawCart(k);},0);
+  };
+  if(ind)setTimeout(apply,280);else apply();
+}
+function openCart(k){
+  if(!S.products.length)return alert('Add products first');
+  cart=[];window.__inl=k;window.__cartKind=k;
+  render();
+  setTimeout(()=>{fillRate();drawCart(k);},0);
+}
+function closeInl(){window.__inl=null;cart=[];render();}
+function saleBody(k){
+  const sale=k=='sale',parties=sale?S.customers:S.suppliers;
+  return `${tradeTabs(k)}<div class="row" style="justify-content:space-between"><button class="btn ghost" onclick="closeInl()">← Back</button><b>${sale?'New sale':'New purchase'}</b><span></span></div>
+  <input id="ptyq" autocomplete="off" placeholder="${sale?'Customer search (khali = Walk-in)':'Supplier search (tap karein)'}" readonly onclick="openPartyList('${k}')" style="width:100%;margin-top:8px">
+  <div id="ptyres" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px"></div>
+  <select id="pty" style="display:none">${parties.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select>
+  <div class="grid2" style="margin-top:8px"><select id="mth"><option value="cash">Cash</option><option value="bank">Bank</option><option value="credit">Credit</option></select><input id="pd" type="number" placeholder="Abhi paid (Rs)" oninput="drawCart('${k}')"></div>
+  <div class="grid2" style="margin-top:8px"><input id="prq" readonly autocomplete="off" placeholder="Product search (tap karein)" onclick="openPicker('${k}')"><input id="qt" type="number" value="1" placeholder="Qty"></div>
+  <div id="prres" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px"></div>
+  <select id="pr" style="display:none"><option value="">--</option>${S.products.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select>
+  <div class="grid2" style="margin-top:8px"><input id="pp" type="number" placeholder="Unit price (blank = default)"><button class="btn" onclick="addLine('${k}')">Add line</button></div>
+  <div id="rtag" style="font-size:12px;color:var(--mut);margin-top:6px"></div>
+  <div id="lines" style="margin-top:8px"></div>
+  ${sale?`<input id="dc" type="number" value="0" placeholder="Discount Rs" style="width:100%;margin-top:6px" oninput="drawCart('sale')">`:''}
+  <div id="tot" style="font-size:18px;margin:10px 0"></div>
+  <button class="btn" style="width:100%" onclick="saveCart('${k}')">Save ${sale?'sale':'purchase'}</button>`;
+}
+function openPartyList(k){
+  window.__plk=k;
+  if($('plist'))$('plist').remove();
+  const d=document.createElement('div');d.id='plist';
+  d.style.cssText='position:fixed;inset:0;z-index:999;background:#f5ece8;display:flex;flex-direction:column;padding:12px;box-sizing:border-box';
+  d.innerHTML=`<div class="row" style="justify-content:space-between"><button class="btn ghost" onclick="closePartyList()">← Back</button><b>${k=='sale'?'Customers':'Suppliers'}</b><span></span></div>
+  <input id="plq" autocomplete="off" placeholder="${k=='sale'?'Customer search':'Supplier search'}" oninput="drawPartyList()" style="width:100%;margin-top:10px">
+  <div id="pllist" style="flex:1;overflow:auto;margin-top:10px"></div>`;
+  document.body.appendChild(d);drawPartyList();
+}
+function drawPartyList(){
+  const k=window.__plk,pool=k=='sale'?S.customers:S.suppliers,lbl=k=='sale'?'Receivable':'Payable';
+  const q=(($('plq')||{}).value||'').trim().toLowerCase();
+  const list=pool.filter(x=>!q||x.name.toLowerCase().includes(q));
+  $('pllist').innerHTML=list.length?list.map(x=>`<div onclick="selPartyFromList('${x.id}')" style="background:#fff;border-radius:12px;padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;cursor:pointer"><b>${esc(x.name)}</b><small style="color:var(--mut)">${lbl}: ${fmt(x.bal)}</small></div>`).join(''):'<p style="color:var(--mut)">Nahi mila</p>';
+}
+function selPartyFromList(id){
+  const pool=window.__plk=='sale'?S.customers:S.suppliers;
+  const x=pool.find(y=>y.id==id);if(!x)return;
+  $('ptyq').value=x.name;$('pty').value=x.id;
+  closePartyList();fillRate();
+}
+function closePartyList(){const e=$('plist');if(e)e.remove();}
+function pickParty(k){
+  const q=($('ptyq').value||'').trim().toLowerCase(),parties=k=='sale'?S.customers:S.suppliers;
+  const exact=parties.find(x=>x.name.trim().toLowerCase()==q);
+  $('pty').value=exact?exact.id:'';
+  fillRate();
+  if(exact||!q){$('ptyres').innerHTML='';return;}
+  const m=parties.filter(x=>x.name.toLowerCase().includes(q)).slice(0,8);
+  $('ptyres').innerHTML=m.length?m.map(x=>`<button class="btn ghost" style="padding:6px 10px;font-size:13px" onclick="selParty('${k}','${x.id}')">${esc(x.name)}</button>`).join(''):'<small style="color:var(--mut)">Koi customer nahi mila</small>';
+}
+function selParty(k,id){
+  const p=(k=='sale'?S.customers:S.suppliers).find(x=>x.id==id);
+  if(!p)return;
+  $('ptyq').value=p.name;$('pty').value=p.id;$('ptyres').innerHTML='';fillRate();
+}
+function openPicker(k){
+  window.__pk2=k;window.__pcat='All';
+  if($('picker'))$('picker').remove();
+  const d=document.createElement('div');d.id='picker';
+  d.style.cssText='position:fixed;inset:0;z-index:999;background:#f5ece8;display:flex;flex-direction:column;padding:12px;box-sizing:border-box';
+  d.innerHTML=`<div class="row" style="justify-content:space-between"><button class="btn ghost" onclick="closePicker()">← Back</button><b>${k=='sale'?'Products':'Products (purchase)'}</b><span></span></div>
+  <input id="pq" autocomplete="off" placeholder="Product search" oninput="drawPicker()" style="width:100%;margin-top:10px">
+  <div style="display:flex;gap:8px;margin-top:10px;flex:0 0 auto">
+    <div id="pcats" style="flex:0 0 96px;overflow:auto;border-radius:10px"></div>
+    <div id="pgrid" style="flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:8px;align-content:start"></div>
+  </div>
+  <div id="pbar" class="btn" onclick="closePicker()" style="margin-top:10px;display:flex;justify-content:space-between;font-weight:600"><span id="pcount">0 Items</span><span id="ptot">Rs 0</span></div>`;
+  document.body.appendChild(d);drawPicker();
+}
+function drawPicker(){
+  const k=window.__pk2,sale=k=='sale',pid=$('pty')?$('pty').value:'',q=(($('pq')||{}).value||'').trim().toLowerCase();
+  const cats=['All',...new Set(S.products.map(p=>p.cat||'Other'))];
+  $('pcats').innerHTML=cats.map(c=>`<div onclick="window.__pcat='${esc(c)}';drawPicker()" style="padding:14px 6px;text-align:center;font-size:14px;${window.__pcat==c?'background:#fff;border-left:4px solid #e5484d;font-weight:600':'background:#f2ebe8'}">${esc(c)}</div>`).join('');
+  const list=S.products.filter(p=>(!window.__pcat||window.__pcat=='All'||(p.cat||'Other')==window.__pcat)&&(!q||p.name.toLowerCase().includes(q)));
+  $('pgrid').innerHTML=list.map(p=>{
+    const price=sale?p.sell:((rateOf(pid,p.id)||{}).rate||p.buy);
+    const inC=cart.find(l=>l.pid==p.id);
+    const thumb=p.img?`<img src="${p.img}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;flex:0 0 auto">`:`<div style="width:56px;height:56px;border-radius:8px;background:#eee;flex:0 0 auto"></div>`;
+    const ctl=inC?`<div style="display:flex;align-items:center;gap:4px"><button class="btn ghost" style="padding:4px 10px" onclick="pickQty('${p.id}',-1)">−</button><input type="number" min="0" value="${inC.q}" onchange="setQty('${p.id}',this.value)" style="width:52px;text-align:center;font-weight:700;padding:6px 4px"><button class="btn" style="padding:4px 10px" onclick="pickQty('${p.id}',1)">+</button></div>`:`<button class="btn ghost" style="padding:8px 12px;font-size:13px" onclick="pickQty('${p.id}',1)">Add</button>`;
+    return `<div class="card" ${inC?'':`onclick="pickQty(\'${p.id}\',1)"`} style="padding:10px;display:flex;align-items:center;gap:10px;cursor:pointer">${thumb}<div style="flex:1;min-width:0"><div style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.name)}</div><small style="color:var(--mut)">${esc(p.cat||'')} · ${esc(p.unit||'pc')}${p.per?' · 1 ctn = '+p.per+' '+esc(p.unit||'box'):''}</small><div style="display:flex;gap:12px;font-size:13px;margin-top:2px"><b class="pos">${fmt(price)}</b><span style="color:${p.stock<=0?'#b91c1c':'var(--mut)'}">Stock: <b>${p.stock}</b></span></div></div><div>${ctl}</div></div>`;
+  }).join('')||'<p style="color:var(--mut)">Product nahi mila</p>';
+  $('pcount').textContent=sum(cart.map(l=>l.q))+' Items';
+  $('ptot').textContent=fmt(sum(cart.map(l=>l.q*l.pc)));
+}
+function openBuyAdd(pid){
+  const p=S.products.find(x=>x.id==pid);if(!p)return;
+  const pty=$('pty')?$('pty').value:'';
+  const rate=(rateOf(pty,p.id)||{}).rate||p.buy||'';
+  form('Purchase: '+p.name,[
+    {k:'r',l:'Rate (per box, Rs)',t:'number',v:String(rate)},
+    {k:'c',l:'Kitne ctn (carton)',t:'number',v:'0'},
+    {k:'per',l:'1 ctn mein kitne box',t:'number',v:String(p.per||'')},
+    {k:'l',l:'Alag se box (loose)',t:'number',v:'0'}],v=>{
+    const r=+v.r,per=Math.floor(+v.per)||0,c=Math.floor(+v.c)||0,l=Math.floor(+v.l)||0;
+    const q=c*per+l;
+    if(!(r>0))return alert('Rate likhein');
+    if(!(q>0))return alert('Ctn ya box likhein');
+    if(c>0&&!(per>0))return alert('1 ctn mein kitne box hain, ye likhein');
+    if(per>0)p.per=per;
+    cart.push({pid:p.id,name:p.name,q,pc:r});
+    closeM();drawPicker();
+  });
+}
+function pickQty(pid,d){
+  const k=window.__pk2,p=S.products.find(x=>x.id==pid),i=cart.findIndex(l=>l.pid==pid);
+  const nq=(i>=0?cart[i].q:0)+d;
+  if(d>0&&k=='sale'&&nq>p.stock){window.__pmsg=`Only ${p.stock} in stock`;return drawPicker();}
+  if(nq<=0){if(i>=0)cart.splice(i,1);}
+  else if(i>=0)cart[i].q=nq;
+  else if(k=='purchase'){return openBuyAdd(p.id);}
+  else{const pc=k=='sale'?p.sell:((rateOf($('pty')?$('pty').value:'',p.id)||{}).rate||p.buy);cart.push({pid:p.id,name:p.name,q:nq,pc});}
+  drawPicker();
+}
+function setQty(pid,v){
+  const k=window.__pk2,p=S.products.find(x=>x.id==pid),i=cart.findIndex(l=>l.pid==pid);
+  let n=Math.floor(+v);if(!(n>=0))n=0;
+  if(k=='sale'&&n>p.stock)n=p.stock;
+  if(n<=0){if(i>=0)cart.splice(i,1);}
+  else if(i>=0)cart[i].q=n;
+  else{const pc=k=='sale'?p.sell:((rateOf($('pty')?$('pty').value:'',p.id)||{}).rate||p.buy);cart.push({pid:p.id,name:p.name,q:n,pc});}
+  drawPicker();
+}
+function closePicker(){
+  const e=$('picker');if(e)e.remove();
+  const k=window.__pk2;if(k&&$('lines')){drawCart(k);fillRate();}
+}
+function prFilter(){
+  const q=($('prq').value||'').trim().toLowerCase();
+  const m=q?S.products.filter(p=>p.name.toLowerCase().includes(q)).slice(0,8):[];
+  $('prres').innerHTML=m.map(p=>`<button class="btn ghost" style="padding:6px 10px;font-size:13px" onclick="selProd('${p.id}')">${esc(p.name)} (${p.stock})</button>`).join('');
+}
+function selProd(id){const p=S.products.find(x=>x.id==id);if(!p)return;$('prq').value=p.name;$('pr').value=p.id;$('prres').innerHTML='';fillRate();}
+function addLine(k){
+  const nm=($('prq').value||'').trim().toLowerCase();
+  const p=S.products.find(x=>x.id==$('pr').value)||S.products.find(x=>x.name.trim().toLowerCase()==nm);
+  if(!p)return alert('Product select karein');
+  const q=+$('qt').value,pc=+$('pp').value||(k=='sale'?p.sell:((rateOf($('pty').value,p.id)||{}).rate||p.buy));
+  if(!(q>0))return alert('Enter quantity');
+  if(k=='sale'&&q>p.stock)return alert('Only '+p.stock+' in stock');
+  cart.push({pid:p.id,name:p.name,q,pc});$('pp').value='';drawCart(k);
+}
+function drawCart(k){
+  $('lines').innerHTML=cart.map((l,i)=>`<div class="row"><span style="flex:1">${l.name} × ${l.q} @ ${fmt(l.pc)}</span><b>${fmt(l.q*l.pc)}</b><button class="del" onclick="cart.splice(${i},1);drawCart('${k}')">✕</button></div>`).join('');
+  const sub=sum(cart.map(l=>l.q*l.pc)),d=k=='sale'&&$('dc')?(+$('dc').value||0):0,tot=sub-d;
+  const pdv=$('pd')&&$('pd').value!==''?+$('pd').value:null,pm=$('mth').value;
+  const paidP=pdv!==null?Math.min(tot,Math.max(0,pdv)):(pm=='credit'?0:tot),dueP=tot-paidP;
+  $('tot').textContent='Total: '+fmt(tot)+(dueP>0?' · Credit: '+fmt(dueP)+' · Paid: '+fmt(paidP):'');
+}
+function saveCart(k){
+  if(!cart.length)return alert('Cart is empty');
+  const sale=k=='sale',m=$('mth').value,pid=$('pty').value;
+  const total=sum(cart.map(l=>l.q*l.pc))-(sale?(+$('dc').value||0):0);
+  if(total<=0)return alert('Invalid total');
+  const pool=sale?S.customers:S.suppliers,nm=(($('ptyq')&&$('ptyq').value)||'').trim().toLowerCase();
+  const party=pool.find(x=>x.id==pid)||(nm?pool.find(x=>x.name.trim().toLowerCase()==nm):undefined);
+  const pdv=$('pd')&&$('pd').value!==''?+$('pd').value:null;
+  const paid=pdv!==null?Math.min(total,Math.max(0,pdv)):(m=='credit'?0:total);
+  const due=total-paid,pm=m=='credit'?'cash':m;
+  if(due>0&&!party)return alert('Credit ke liye '+(sale?'customer':'supplier')+' select karein');
+  if(paid>0&&S[pm]<paid&&!sale)return alert('Insufficient '+pm+' balance');
+  if(sale)for(const l of cart){const need=sum(cart.filter(x=>x.pid==l.pid).map(x=>x.q));const p=S.products.find(x=>x.id==l.pid);if(need>p.stock)return alert(p.name+': only '+p.stock+' in stock');}
+  let cogs=0;
+  cart.forEach(l=>{const p=S.products.find(x=>x.id==l.pid);
+    if(sale){cogs+=l.q*p.buy;p.stock-=l.q;}
+    else{const ns=p.stock+l.q;p.buy=ns?(p.stock*p.buy+l.q*l.pc)/ns:l.pc;p.stock=ns;} // weighted-average cost
+  });
+  if(paid>0)money(pm,sale?paid:-paid);
+  if(due>0&&party)party.bal+=due;
+  addTx(k,total,paid>0?pm:'credit',party?party.name:(sale?'Walk-in':'Cash supplier'),{pid:party?party.id:'',items:cart.map(l=>({n:l.name,q:l.q,p:l.pc})),cogs,paid,due});
+  if(!sale&&party)updRates(party,cart);
+  save();window.__inl=null;cart=[];render();
+}
+
+// ---------- customers / suppliers ----------
+function formParty(k){
+  const c=k=='c';
+  form(c?'New customer':'New supplier',c?[{k:'name',l:'Name'},{k:'ph',l:'Mobile number (03xx...)',v:''}]:[{k:'name',l:'Name'},{k:'ph',l:'Mobile number (03xx...)',v:''}],
+  v=>{if(!v.name.trim())return alert('Name required');
+    const p={id:uid(),name:v.name.trim(),bal:0,ph:(v.ph||'').trim()};
+    (c?S.customers:S.suppliers).push(p);save();closeM();render();},
+  '<button class="btn ghost" style="width:100%;margin-top:8px" onclick="pickContact()">Phone contact list se chunein</button>');
+}
+function formPay(k,pid){
+  const p=(k=='c'?S.customers:S.suppliers).find(x=>x.id==pid);
+  form(k=='c'?'Receive from '+p.name:'Pay '+p.name,[{k:'a',l:'Amount (outstanding '+fmt(p.bal)+')',t:'number',v:p.bal},{k:'m',l:'Via',o:ACC,v:'cash'}],
+  v=>{const a=+v.a;
+    if(!(a>0&&a<=p.bal+0.001))return alert('Amount must be between 1 and '+fmt(p.bal));
+    if(k=='c')money(v.m,a);else{if(S[v.m]<a)return alert('Insufficient balance');money(v.m,-a);}
+    p.bal-=a;addTx(k=='c'?'receipt':'payment',a,v.m,p.name);save();closeM();render();});
+}
+function delParty(k,pid){
+  const L=k=='c'?'customers':'suppliers',p=S[L].find(x=>x.id==pid);
+  if(p.bal!=0)return toast('Pehle balance clear karein');
+  if(S.txns.some(t=>t.pid==p.id||t.party==p.name))return toast('Is ka lenden ka record hai, delete nahi ho sakta');
+  S[L]=S[L].filter(x=>x.id!=pid);save();closeM();render();toast('Delete ho gaya');
+}
+function smsText(p,k){
+  return k=='c'
+    ? `Assalam o Alaikum ${p.name}. Aap ka baqaya udhaar ${fmt(p.bal)} hai. Meherbani karke jald adaigi kar dein. Shukriya - Adan Traders`
+    : `Assalam o Alaikum ${p.name}. Hamari taraf se aap ka baqaya ${fmt(p.bal)} hai. Shukriya - Adan Traders`;
+}
+function waNum(ph){let d=(ph||'').replace(/\D/g,'');if(d.startsWith('0'))d='92'+d.slice(1);return d;}
+function sendSMS(k,pid){
+  const p=(k=='c'?S.customers:S.suppliers).find(x=>x.id==pid);if(!p)return;
+  if(!p.ph)return toast('Pehle mobile number add karein (Edit)');
+  window.location.href='sms:'+p.ph.replace(/\s/g,'')+'?body='+encodeURIComponent(smsText(p,k));
+}
+function sendWA(k,pid){
+  const p=(k=='c'?S.customers:S.suppliers).find(x=>x.id==pid);if(!p)return;
+  if(!p.ph)return toast('Pehle mobile number add karein (Edit)');
+  window.open('https://wa.me/'+waNum(p.ph)+'?text='+encodeURIComponent(smsText(p,k)),'_blank');
+}
+async function pickContact(){
+  if(!('contacts' in navigator)||!navigator.contacts||!navigator.contacts.select)
+    return toast('Ye browser contact list support nahi karta. Chrome (Android) mein kholein.');
+  try{
+    const r=await navigator.contacts.select(['name','tel'],{multiple:false});
+    const c=r&&r[0];if(!c)return;
+    if(c.name&&c.name[0]&&$('f_name'))$('f_name').value=c.name[0];
+    if(c.tel&&c.tel[0]&&$('f_ph'))$('f_ph').value=c.tel[0].replace(/[\s\-()]/g,'');
+    toast('Contact li gayi');
+  }catch(e){toast('Contact nahi chuna gaya');}
+}
+// Edit customer/supplier: naam aur (customer ke liye) credit limit. Balance sirf lenden se badalta hai.
+function editParty(k,pid){
+  const c=k=='c',L=c?S.customers:S.suppliers,p=L.find(x=>x.id==pid);if(!p)return;
+  form('Edit '+(c?'customer':'supplier'),c?[{k:'name',l:'Naam',v:p.name},{k:'ph',l:'Mobile number',v:p.ph||''}]:[{k:'name',l:'Naam',v:p.name},{k:'ph',l:'Mobile number',v:p.ph||''}],
+  v=>{const nm=(v.name||'').trim();if(!nm)return toast('Naam khali nahi ho sakta');
+    if(L.some(x=>x!==p&&x.name.toLowerCase()==nm.toLowerCase()))return toast('Ye naam pehle se maujood hai');
+    const old=p.name;p.ph=(v.ph||'').trim();
+    if(nm!=old){p.name=nm;S.txns.forEach(t=>{if(t.pid==p.id||(!t.pid&&t.party==old))t.party=nm;});}
+    save();closeM();render();toast('Update ho gaya');},
+  `<button class="btn ghost" style="width:100%;margin-top:8px" onclick="pickContact()">Phone contact list se chunein</button><button class="btn danger" style="width:100%;margin-top:8px" onclick="delParty('${k}','${p.id}')">Delete ${c?'customer':'supplier'}</button>`);
+}
+
+// ---------- expenses & cash ----------
+function formExp(){
+  form('New expense',[{k:'cat',l:'Category',o:[['Rent','Rent'],['Transport','Transport'],['Salaries','Salaries'],['Electricity','Electricity'],['Misc','Miscellaneous']]},{k:'a',l:'Amount',t:'number'},{k:'m',l:'Paid from',o:ACC,v:'cash'}],
+  v=>{const a=+v.a;if(!(a>0))return alert('Enter amount');if(S[v.m]<a)return alert('Insufficient balance');
+    money(v.m,-a);addTx('expense',a,v.m,v.cat);save();closeM();render();});
+}
+function formMoney(t){
+  const fields=[{k:'a',l:'Amount',t:'number'}];
+  if(t=='transfer')fields.push({k:'from',l:'From',o:ACC,v:'cash'},{k:'to',l:'To',o:ACC,v:'bank'});
+  else fields.push({k:'m',l:'Account',o:ACC,v:'cash'});
+  form(t=='transfer'?'Transfer':t=='withdrawal'?'Owner withdrawal':'Add capital',fields,v=>{
+    const a=+v.a;if(!(a>0))return alert('Enter amount');
+    if(t=='transfer'){
+      if(v.from==v.to)return alert('Choose different accounts');
+      if(S[v.from]<a)return alert('Insufficient '+v.from);
+      money(v.from,-a);money(v.to,a);addTx('transfer',a,v.from+'→'+v.to,'Internal');
+    }else if(t=='withdrawal'){
+      if(S[v.m]<a)return alert('Insufficient balance');
+      money(v.m,-a);addTx('withdrawal',a,v.m,'Owner');
+    }else{money(v.m,a);addTx('capital',a,v.m,'Owner capital');}
+    save();closeM();render();
+  });
+}
+
+// ---------- shares ----------
+function setAuth(v){const n=+v||0;if(n!==S.auth){S.auth=n;addTx('setting',0,'none','Authorized shares: '+n);}save();}
+function formIssue(){
+  form('Naye shares issue karein (company ko paisa)',[{k:'name',l:'Shareholder name'},{k:'n',l:'Number of shares (price auto)',t:'number'},{k:'m',l:'Received via',o:ACC,v:'bank'}],
+  v=>{
+    const n=+v.n,price=calc().price,issued=sum(S.holders.map(h=>h.n));
+    if(!v.name.trim()||!(n>0))return alert('Enter name and shares');
+    if(!(price>0))return alert('Pehle INVESTMENT screen par "Shares mein divide karein" dabakar shares banayein. Phir yahan naye shareholder ko shares bech sakte hain.');
+    if(S.auth&&issued+n>S.auth)return alert('Exceeds authorized shares ('+S.auth+')');
+    let h=S.holders.find(x=>x.name==v.name.trim());
+    if(h)h.n+=n;else S.holders.push({id:uid(),name:v.name.trim(),n});
+    money(v.m,n*price);addTx('capital',n*price,v.m,v.name.trim(),{sh:n,price});
+    save();closeM();render();
+  });
+}
+function formDiv(){
+  form('Distribute profit (dividend)',[{k:'a',l:'Total amount',t:'number'},{k:'m',l:'Paid via',o:ACC,v:'bank'}],
+  v=>{
+    const a=+v.a,c=calc();
+    if(!(a>0))return alert('Enter amount');
+    if(a>c.distributable)return alert('Only '+fmt(c.distributable)+' distributable profit');
+    if(S[v.m]<a)return alert('Insufficient balance');
+    money(v.m,-a);addTx('withdrawal',a,v.m,'Dividend',{perShare:a/(c.issued||1)});
+    save();closeM();render();
+  });
+}
+
+function formInvest(){
+  form('Add investment',[{k:'a',l:'Amount',t:'number'},{k:'m',l:'Received via',o:ACC,v:'bank'},{k:'note',l:'Note (e.g. Owner, Partner)',v:'Owner'}],
+  v=>{const a=+v.a;if(!(a>0))return alert('Amount daalein');money(v.m,a);addTx('capital',a,v.m,v.note||'Investment');save();closeM();render();});
+}
+function formDivide(){
+  const c=calc();
+  if(c.capital<=0)return toast('Pehle investment add karein');
+  form('Shares mein divide karein',[{k:'name',l:'Shareholder naam',v:'Owner'},{k:'n',l:'Shares ki tadad',t:'number'}],
+  v=>{const n=+v.n,nm=v.name.trim();
+    if(!nm||!(n>0))return alert('Naam aur shares daalein');
+    if(S.auth&&c.issued+n>S.auth)return alert('Authorized shares se zyada ('+S.auth+')');
+    const h=S.holders.find(x=>x.name==nm);if(h)h.n+=n;else S.holders.push({id:uid(),name:nm,n});addTx('shares',0,'none',nm,{sh:n});
+    save();closeM();render();},
+  '<small style="color:var(--mut)">Price = business valuation ÷ total shares, khud hisaab hoga.</small>');
+}
+
+function capList(){
+  const L=kind('capital').filter(t=>t.method!='stock');
+  if(!L.length)return '<p style="color:var(--mut)">Koi investment nahi hai.</p>';
+  return `<table>${L.slice(0,50).map(t=>`<tr><td>${dstr(t.date)}</td><td>${t.party||''}</td><td style="text-align:right">${fmt(t.total)}<br><small>${t.method}</small></td><td>${t.sh?'':`<button class="btn ghost" onclick="editTx('${t.id}')">Edit</button>`}</td></tr>`).join('')}</table>`;
+}
+function editCap(id){
+  const t=S.txns.find(x=>x.id==id);if(!t)return;
+  if(sum(S.holders.map(h=>h.n))>0)return alert('Shares already divide ho chuke hain, is investment ko edit nahi kar sakte.');
+  form('Investment edit karein',[{k:'a',l:'Amount',t:'number',v:t.total},{k:'m',l:'Cash / Bank',o:ACC,v:t.method},{k:'note',l:'Note',v:t.party}],
+  v=>{const a=+v.a;if(!(a>0))return alert('Amount daalein');
+    const oldM=t.method,oldA=t.total;
+    money(oldM,-oldA);
+    if(S[oldM]<0){money(oldM,oldA);return alert('Cash/bank mein itna balance nahi hai.');}
+    money(v.m,a);t.total=a;t.method=v.m;t.party=v.note||'Investment';
+    save();closeM();render();});
+}
+function delCap(id){
+  const t=S.txns.find(x=>x.id==id);if(!t)return;
+  if(sum(S.holders.map(h=>h.n))>0)return alert('Shares already divide ho chuke hain, is investment ko delete nahi kar sakte.');
+  if(!confirm('Ye investment delete karni hai? '+fmt(t.total)+' cash/bank se wapas ho jayega.'))return;
+  if(S[t.method]<t.total)return alert('Cash/bank mein itna balance nahi hai.');
+  money(t.method,-t.total);
+  S.txns=S.txns.filter(x=>x.id!=id);save();render();
+}
+
+const MS={sale:1,receipt:1,capital:1,purchase:-1,expense:-1,payment:-1,withdrawal:-1,distribution:-1,distrev:1};
+const BS={sale:1,purchase:1,receipt:-1,payment:-1};
+// fx: undo (s=-1) or apply (s=+1) an entry's effect on cash/bank, party balances and stock
+function fx(t,s){
+  const a=t.total;
+  if(t.type=='buyback'){const h=S.holders.find(x=>x.id==t.pid);if(h)h.n+=t.sh*s;money(t.method,-a*s);return;}
+  if(t.type=='adjust'){money(t.method,t.dir*a*s);if(t.dir<0){const cp=S.customers.find(x=>x.id==t.pid||x.name==t.party);if(cp)cp.bal+=a*s;}return;}
+  if(t.type=='transfer'){const[f,to]=t.from?[t.from,t.to]:t.method.split('→');money(f,-a*s);money(to,a*s);return;}
+  if(t.items)t.items.forEach(l=>{const p=S.products.find(x=>x.id==l.pid||x.name==l.n);if(p)p.stock+=(t.type=='sale'?-1:1)*l.q*s;});
+  if((t.type=='sale'||t.type=='purchase')&&(t.paid!==undefined||t.method=='credit')){
+    const paid=t.paid!==undefined?t.paid:0,due=t.due!==undefined?t.due:a-paid;
+    const L=t.type=='sale'?S.customers:S.suppliers;const pt=L.find(x=>x.id==t.pid||x.name==t.party);
+    if(pt&&due)pt.bal+=due*s;
+    if(paid&&t.method!='credit')money(t.method,(t.type=='sale'?1:-1)*paid*s);
+    return;
+  }
+  const cred=t.method=='credit';
+  if(BS[t.type]!==undefined&&(cred||t.type=='receipt'||t.type=='payment')){const L=(t.type=='sale'||t.type=='receipt')?S.customers:S.suppliers;const p=L.find(x=>x.id==t.pid||x.name==t.party);if(p)p.bal+=BS[t.type]*a*s;}
+  if(!cred&&MS[t.type]!==undefined&&t.method!='stock')money(t.method,MS[t.type]*a*s);
+}
+function editSale(id){
+  const t=S.txns.find(x=>x.id==id);if(!t)return;
+  const items=(t.items||[]).map(l=>({pid:(S.products.find(p=>p.id==l.pid||p.name==l.n)||{}).id||'',name:l.n,q:l.q,pc:l.p}));
+  const sub=sum(items.map(i=>i.q*i.pc));
+  window.__se={id,items,party:t.party||'',method:t.method,paid:t.paid!==undefined?t.paid:(t.method=='credit'?0:t.total),disc:Math.max(0,sub-t.total)};
+  if(!$('seov')){const d=document.createElement('div');d.id='seov';d.style.cssText='position:fixed;inset:0;z-index:999;background:#f5ece8;overflow:auto;padding:12px;box-sizing:border-box';document.body.appendChild(d);}
+  drawSaleEdit();
+}
+function drawSaleEdit(){
+  const se=window.__se,sub=sum(se.items.map(i=>i.q*i.pc)),total=sub-(+se.disc||0);
+  const custOpts='<option value="">Walk-in</option>'+S.customers.map(c=>`<option value="${c.id}" ${c.name==se.party?'selected':''}>${esc(c.name)}</option>`).join('');
+  const rows=se.items.map((i,n)=>`<div style="display:flex;align-items:center;gap:6px;margin-top:8px;background:#fff;border-radius:10px;padding:8px"><span style="flex:1;font-weight:600">${esc(i.name)}</span><input type="number" value="${i.q}" onchange="seSet(${n},'q',this.value)" style="width:60px"><input type="number" value="${i.pc}" onchange="seSet(${n},'pc',this.value)" style="width:70px"><b>${fmt(i.q*i.pc)}</b><button class="del" onclick="seDel(${n})">✕</button></div>`).join('');
+  const prod=S.products.map(p=>`<option value="${p.id}">${esc(p.name)} (${p.stock})</option>`).join('');
+  $('seov').innerHTML=`<div class="row" style="justify-content:space-between"><button class="btn ghost" onclick="closeSaleEdit()">← Back</button><b>Sale edit</b><span></span></div>
+  <select style="width:100%;margin-top:10px" onchange="seField('party',this.value)">${custOpts}</select>
+  <div class="grid2" style="margin-top:8px"><select onchange="seField('method',this.value)"><option value="cash" ${se.method=='cash'?'selected':''}>Cash</option><option value="bank" ${se.method=='bank'?'selected':''}>Bank</option><option value="credit" ${se.method=='credit'?'selected':''}>Credit</option></select><input type="number" value="${se.paid}" placeholder="Abhi paid" onchange="seField('paid',this.value)"></div>
+  <input type="number" value="${se.disc}" placeholder="Discount" onchange="seField('disc',this.value)" style="width:100%;margin-top:8px">
+  ${rows||'<p style="color:var(--mut)">Koi item nahi</p>'}
+  <div class="grid2" style="margin-top:10px"><select id="seprod">${prod}</select><input id="seqty" type="number" value="1"></div>
+  <button class="btn ghost" style="width:100%;margin-top:6px" onclick="seAdd()">+ Item add karein</button>
+  <div style="font-size:18px;margin:10px 0">Total: ${fmt(total)}</div>
+  <button class="btn" style="width:100%" onclick="saveSaleEdit()">Save changes</button>
+  <button class="btn danger" style="width:100%;margin-top:8px" onclick="closeSaleEdit();delTx('${se.id}')">Delete entry</button>`;
+}
+function seField(f,v){
+  const se=window.__se;
+  if(f=='party'){const c=S.customers.find(x=>x.id==v);se.party=c?c.name:'';}
+  else if(f=='paid'||f=='disc')se[f]=+v||0;
+  else se[f]=v;
+  drawSaleEdit();
+}
+function seSet(n,f,v){window.__se.items[n][f]=+v||0;drawSaleEdit();}
+function seDel(n){window.__se.items.splice(n,1);drawSaleEdit();}
+function seAdd(){
+  const se=window.__se,p=S.products.find(x=>x.id==$('seprod').value),q=+$('seqty').value;
+  if(!p||!(q>0))return alert('Product aur quantity daalein');
+  const ex=se.items.find(i=>i.pid==p.id);
+  if(ex)ex.q+=q;else se.items.push({pid:p.id,name:p.name,q,pc:p.sell});
+  drawSaleEdit();
+}
+function openImport(){
+  if($('imp'))$('imp').remove();
+  const d=document.createElement('div');d.id='imp';
+  d.style.cssText='position:fixed;inset:0;z-index:999;background:#f5ece8;overflow:auto;padding:12px;box-sizing:border-box';
+  d.innerHTML=`<div class="row" style="justify-content:space-between"><button class="btn ghost" onclick="closeImp()">✕ Close</button><b>Statement import</b><span></span></div>
+  <select id="impacc" style="width:100%;margin-top:10px">${ACC.map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}</select>
+  <textarea id="imptxt" placeholder="Statement ka CSV yahan paste karein (Date, Description, Debit, Credit)" style="width:100%;min-height:140px;margin-top:8px;font-size:12px"></textarea>
+  <button class="btn" style="width:100%;margin-top:8px" onclick="impPreview()">Preview</button>
+  <div id="impout" style="margin-top:10px"></div>`;
+  document.body.appendChild(d);
+}
+function closeImp(){const e=$('imp');if(e)e.remove();window.__imp=null;}
+function csvRow(line){
+  const out=[];let cur='',q=false;
+  for(const ch of line){if(ch=='"')q=!q;else if(ch==','&&!q){out.push(cur);cur='';}else cur+=ch;}
+  out.push(cur);return out.map(x=>x.trim());
+}
+function impPreview(){
+  const lines=($('imptxt').value||'').split(/\r?\n/).filter(l=>l.trim());
+  if(!lines.length)return alert('CSV paste karein');
+  const rows=lines.map(csvRow);
+  const h=rows[0].map(x=>x.toLowerCase());
+  const hasHead=h.some(x=>x.includes('date'));
+  const idx=(names,def)=>{const i=h.findIndex(x=>names.some(n=>x.includes(n)));return i>=0?i:def;};
+  const iD=hasHead?idx(['date'],0):0,iDesc=hasHead?idx(['desc','narr','particular','detail'],1):1;
+  const iDr=hasHead?idx(['debit','withdraw','dr'],2):2,iCr=hasHead?idx(['credit','deposit','cr'],3):3;
+  const data=hasHead?rows.slice(1):rows;
+  const num=v=>parseFloat(String(v||'').replace(/[,\s]/g,''))||0;
+  const list=data.map(r=>{
+    const dr=num(r[iDr]),cr=num(r[iCr]),amt=dr||cr;
+    if(!amt)return null;
+    const inflow=!dr&&cr>0;
+    const pd=new Date(r[iD]);
+    const date=isNaN(pd)?new Date():pd;
+    const key=(r[iD]||'')+'|'+(r[iDesc]||'')+'|'+amt+'|'+(inflow?'in':'out');
+    return {date,desc:r[iDesc]||'',amt,inflow,type:inflow?'capital':'expense',key};
+  }).filter(Boolean);
+  if(!list.length)return alert('Koi entry nahi mili. Columns check karein.');
+  window.__imp={acct:$('impacc').value,rows:list};
+  drawImp();
+}
+function drawImp(){
+  const I=window.__imp;if(!I)return;
+  const rowsH=I.rows.map((r,i)=>{
+    const opts=r.inflow?[['capital','Capital (paisa dala)'],['ignore','Ignore']]:[['expense','Kharcha (Expense)'],['withdrawal','Withdrawal (nikala)'],['ignore','Ignore']];
+    return `<div style="background:#fff;border-radius:10px;padding:8px;margin-top:6px"><div style="display:flex;justify-content:space-between;gap:8px"><span style="font-size:12px;color:var(--mut)">${esc(r.date.toLocaleDateString('en-GB'))} · ${esc(r.desc)}</span><b class="${r.inflow?'pos':'neg'}">${r.inflow?'+':'−'}${fmt(r.amt)}</b></div><select style="width:100%;margin-top:4px" onchange="window.__imp.rows[${i}].type=this.value">${opts.map(([v,l])=>`<option value="${v}" ${r.type==v?'selected':''}>${l}</option>`).join('')}</select></div>`;
+  }).join('');
+  $('impout').innerHTML=`<p style="color:var(--mut)">${I.rows.length} entries mili. Har entry ka type chunein, phir Import karein.</p>${rowsH}<button class="btn" style="width:100%;margin-top:10px" onclick="impRun()">Import karein</button>`;
+}
+function impRun(){
+  const I=window.__imp;if(!I)return;
+  const acct=I.acct;let done=0,dup=0,skip=0;
+  S.imported=S.imported||[];
+  I.rows.forEach(r=>{
+    if(r.type=='ignore')return;
+    if(S.imported.includes(r.key)){dup++;return;}
+    const out=r.type=='expense'||r.type=='withdrawal';
+    if(out&&S[acct]<r.amt){skip++;return;}
+    money(acct,(out?-1:1)*r.amt);
+    addTx(r.type,r.amt,acct,r.desc||'Statement',{imported:true});
+    S.imported.push(r.key);done++;
+  });
+  save();closeImp();view='cash';render();
+  toast(done+' import hue, '+dup+' pehle se the, '+skip+' balance kam');
+}
+function openTradeSheet(){
+  if($('tsheet'))$('tsheet').remove();
+  const d=document.createElement('div');d.id='tsheet';
+  d.style.cssText='position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.45);display:flex;align-items:flex-end';
+  d.onclick=e=>{if(e.target.id=='tsheet')closeTradeSheet();};
+  d.innerHTML=`<div style="background:#fff;width:100%;border-radius:18px 18px 0 0;padding:16px;box-sizing:border-box">
+    <div class="row" style="justify-content:space-between"><b>Trade shares</b><button class="btn ghost" onclick="closeTradeSheet()">✕</button></div>
+    <p style="color:var(--mut);font-size:13px;margin:8px 0">Share price: <b>${fmt(calc().price)}</b></p>
+    <button onclick="closeTradeSheet();formIssue()" style="width:100%;background:#111;color:#fff;border:0;border-radius:24px;padding:14px;font-size:16px;font-weight:600;margin-top:6px">Issue shares (naye shares)</button>
+    <button onclick="closeTradeSheet();formSell()" style="width:100%;background:#fff;color:#111;border:1px solid #111;border-radius:24px;padding:14px;font-size:16px;font-weight:600;margin-top:10px">Sell shares (shareholder se)</button>
+    <button onclick="closeTradeSheet();formBuyBack()" style="width:100%;background:#fff;color:#111;border:1px solid #111;border-radius:24px;padding:14px;font-size:16px;font-weight:600;margin-top:10px">Buy back (company shares wapas le)</button>
+  </div>`;
+  document.body.appendChild(d);
+}
+function tradeHistory(){
+  const L={capital:'Issue',shares:'Divide',sharetx:'Transfer',buyback:'Buy back'};
+  const rows=S.txns.filter(t=>L[t.type]&&t.sh).slice(-20).reverse();
+  if(!rows.length)return '<p style="color:var(--mut);margin-top:14px">Abhi koi share trade nahi hua</p>';
+  const dt=t=>t.date?new Date(t.date).toLocaleString('en-GB',{timeZone:'Asia/Karachi',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):(t.day||'');
+  return '<h3 style="margin-top:16px">Trade history</h3>'+rows.map(t=>`<div style="display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid #e5e7eb;font-size:13px"><div><div style="color:var(--mut);font-size:12px">${esc(dt(t))}</div><b>${L[t.type]}</b> · ${esc(t.party||'')}</div><div style="text-align:right"><div class="${t.sh>0?'pos':'neg'}" style="font-weight:600">${t.sh>0?'+':''}${t.sh} sh</div><small>${fmt(t.total)}${t.price?' @ '+fmt(t.price):''}</small></div></div>`).join('');
+}
+function closeTradeSheet(){const e=$('tsheet');if(e)e.remove();}
+function formBuyBack(){
+  if(!S.holders.length)return alert('Pehle shareholder banayein');
+  form('Buy back: shareholder se shares wapas lein',[
+    {k:'h',l:'Shareholder',o:S.holders.map(h=>[h.id,h.name+' ('+h.n+' shares)']),v:S.holders[0].id},
+    {k:'n',l:'Shares kitne',t:'number',v:''},
+    {k:'m',l:'Paise kahan se',o:ACC,v:'cash'}],v=>{
+    const h=S.holders.find(x=>x.id==v.h),n=Math.floor(+v.n),price=calc().price,a=n*price;
+    if(!h)return alert('Shareholder chunein');
+    if(!(n>0))return alert('Shares ki tadaad likhein');
+    if(n>h.n)return alert('Itne shares nahi hain (us ke paas '+h.n+')');
+    if(S[v.m]<a)return alert('Itne paise '+v.m+' mein nahi hain');
+    const t=addTx('buyback',a,v.m,h.name,{pid:h.id,sh:-n,price});
+    fx(t,1);
+    save();closeM();render();
+  });
+}
+function importProducts(){
+  openTextBox('Products ki CSV yahan paste karein (Name, Category, Unit, Stock, Buy Price, Sell Price), phir Import dabayein','',txt=>{
+    const lines=(txt||'').split(/\r?\n/).filter(l=>l.trim());
+    if(!lines.length)return toast('CSV khali hai');
+    const rows=lines.map(l=>(l.includes('\t')&&!l.includes(','))?l.split('\t').map(x=>x.trim()):csvRow(l));
+    const h=rows[0].map(x=>x.toLowerCase());
+    const hasHead=h.some(x=>x.includes('name')||x.includes('naam'));
+    const col=(names,def)=>{const i=h.findIndex(x=>names.some(n=>x.includes(n)));return i>=0?i:def;};
+    const iN=hasHead?col(['name','naam','item'],0):0, iC=hasHead?col(['categ','cat'],1):1, iU=hasHead?col(['unit'],2):2;
+    const iS=hasHead?col(['stock'],3):3, iB=hasHead?col(['buy','purchase'],4):4, iSe=hasHead?col(['sell','sale'],5):5;
+    const data=hasHead?rows.slice(1):rows;
+    const num=v=>parseFloat(String(v||'').replace(/[,\s]/g,''))||0;
+    let added=0,dup=0;
+    const have=new Set(S.products.map(p=>p.name.trim().toLowerCase()));
+    data.forEach(r=>{
+      const name=(r[iN]||'').trim();
+      if(!name)return;
+      if(have.has(name.toLowerCase())){dup++;return;}
+      have.add(name.toLowerCase());
+      S.products.push({id:uid(),name,cat:(r[iC]||'').trim(),unit:(r[iU]||'').trim()||'pkt',buy:num(r[iB]),sell:num(r[iSe]),stock:num(r[iS]),min:5,img:''});
+      added++;
+    });
+    save();closeTB();view='products';render();
+    toast(added+' product import hue, '+dup+' pehle se the');
+  });
+  const b=[...document.querySelectorAll('#tbox button')].find(x=>x.textContent.includes('Restore'));
+  if(b)b.textContent='Import karein';
+  const ta=document.getElementById('tbtxt');
+  if(ta){
+    const wrap=document.createElement('div');wrap.style.cssText='margin-top:10px;background:#fff;border-radius:10px;padding:10px';
+    wrap.innerHTML='<div style="font-size:13px;color:var(--mut);margin-bottom:6px">Ya phone se CSV file chunein:</div>';
+    const fi=document.createElement('input');fi.type='file';fi.accept='.csv,.txt,text/csv,text/plain';
+    fi.onchange=()=>{const f=fi.files&&fi.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{ta.value=r.result;toast('File load ho gayi, ab Import karein');};r.readAsText(f);};
+    wrap.appendChild(fi);
+    ta.parentNode.insertBefore(wrap,ta);
+  }
+}
+function closePdf(){const e=document.getElementById('pdfrep');if(e)e.remove();}
+function pdfReport(kind){
+  const brand=(document.getElementById('brandT')||{}).textContent||'Business';
+  const today=new Date().toLocaleDateString('en-GB',{timeZone:'Asia/Karachi'});
+  const dt=t=>t.date?new Date(t.date).toLocaleDateString('en-GB',{timeZone:'Asia/Karachi'}):(t.day||'');
+  let title='',head='',rows='',total=0,totLabel='';
+  if(kind=='c'||kind=='s'){
+    const L=(kind=='c'?S.customers:S.suppliers).filter(x=>Math.abs(x.bal)>0.001);
+    title=kind=='c'?'Customers - baqaya udhaar':'Suppliers - hamari taraf baqaya';
+    head=kind=='c'?'<tr><th>#</th><th>Naam</th><th>Mobile</th><th style="text-align:right">Udhaar</th></tr>':'<tr><th>#</th><th>Naam</th><th>Mobile</th><th style="text-align:right">Baqaya</th></tr>';
+    rows=L.map((x,i)=>`<tr><td>${i+1}</td><td>${esc(x.name)}</td><td>${esc(x.ph||'')}</td><td style="text-align:right">${fmt(x.bal)}</td></tr>`).join('');
+    total=sum(L.map(x=>x.bal));totLabel=kind=='c'?'Kul udhaar':'Kul baqaya';
+  }else{
+    const L=S.txns.filter(t=>t.type==kind);
+    title=kind=='sale'?'Sales':'Purchases';
+    head='<tr><th>Tarikh</th><th>Party</th><th style="text-align:right">Kul</th><th style="text-align:right">Paid</th><th style="text-align:right">Udhaar</th></tr>';
+    rows=L.map(t=>`<tr><td>${esc(dt(t))}</td><td>${esc(t.party||'')}</td><td style="text-align:right">${fmt(t.total)}</td><td style="text-align:right">${fmt(t.paid!==undefined?t.paid:(t.method=='credit'?0:t.total))}</td><td style="text-align:right">${fmt(t.due!==undefined?t.due:(t.method=='credit'?t.total:0))}</td></tr>`).join('');
+    total=sum(L.map(t=>t.total));totLabel='Kul '+(kind=='sale'?'sale':'purchase');
+  }
+  const cols=(head.match(/<th/g)||[]).length;
+  closePdf();
+  const d=document.createElement('div');d.id='pdfrep';d.className='pdfrep';
+  d.innerHTML=`<div class="noprint" style="display:flex;justify-content:space-between;gap:8px;margin-bottom:12px"><button class="btn ghost" onclick="closePdf()">✕ Band karein</button><button class="btn" onclick="window.print()">PDF / Print</button></div>
+  <h2 style="margin:0">${esc(brand)}</h2><div style="margin:4px 0 12px">${title} · ${today}</div>
+  <table><thead>${head}</thead><tbody>${rows||`<tr><td colspan="${cols}">Koi entry nahi</td></tr>`}</tbody><tfoot><tr><th colspan="${cols-1}" style="text-align:right">${totLabel}</th><th style="text-align:right">${fmt(total)}</th></tr></tfoot></table>`;
+  document.body.appendChild(d);
+}
+function goOrigin(id){
+  const t=S.txns.find(x=>x.id==id);if(!t)return;
+  const cust=S.customers.find(x=>x.id==t.pid)||S.customers.find(x=>x.name==t.party);
+  const supp=S.suppliers.find(x=>x.id==t.pid)||S.suppliers.find(x=>x.name==t.party);
+  const go2=(v)=>{view=v;window.__inl=null;render();};
+  if(t.type=='sale')return editSale(id);
+  if(t.type=='purchase')return go2('purchase');
+  if(t.type=='receipt'){if(cust)return openParty('c',cust.id);return go2('customers');}
+  if(t.type=='payment'){if(supp)return openParty('s',supp.id);return go2('suppliers');}
+  if(t.type=='adjust'){if(t.pid&&cust)return openParty('c',cust.id);return go2('cash');}
+  if(t.type=='expense')return go2('expenses');
+  if(t.type=='capital')return go2(t.sh?'investment':'cash');
+  if(t.type=='buyback'||t.type=='sharetx'||t.type=='shares')return go2('investment');
+  if(t.type=='withdrawal'||t.type=='transfer'||t.type=='distribution'||t.type=='distrev')return go2('cash');
+  return go2('dash');
+}
+const LANG_MAP={"ur": {"Home": "ہوم", "Customers": "گاہک", "Trade": "تجارت", "Wallet": "بٹوا", "More": "مزید", "Cloud": "کلاؤڈ", "Backup": "بیک اپ", "Restore": "بحال", "Demo": "ڈیمو", "Reset": "ری سیٹ", "SHARE PRICE": "شیئر قیمت", "Invested": "لگایا گیا پیسہ", "Buying Power": "خریداری کی طاقت", "Stock Value": "اسٹاک ویلیو", "Expected profit:": "متوقع منافع:", "All-time purchase:": "کل خریداری:", "All time profit": "کل منافع", "All-time sale:": "کل فروخت:", "Expenses:": "اخراجات:", "Distributed:": "تقسیم شدہ:", "Receivables": "وصولی", "Payables": "ادائیگی", "Realized net profit": "حقیقی خالص منافع", "Retained profit": "محفوظ منافع", "Total business equity": "کاروبار کی ایکویٹی", "Available cash": "دستیاب نقد", "today": "آج", "+ Customer": "+ گاہک", "+ Supplier": "+ سپلائر", "Search": "تلاش", "Name": "نام", "Receivable": "وصولی", "Payable": "ادائیگی", "Receive": "وصول کریں", "Pay": "ادا کریں", "Edit": "ترمیم", "Rates": "ریٹس", "Talash krein": "تلاش کریں"}, "rur": {"Customers": "Customers", "Trade": "Trade", "Wallet": "Wallet", "More": "More", "Home": "Home", "Stock Value": "Stock ki Qeemat", "Invested": "Lagaya Paisa", "Buying Power": "Kharidne ki Taqat", "Receivables": "Wasooli (Receivable)", "Payables": "Adaigi (Payable)", "Available cash": "Dastiyaab Cash", "Total business equity": "Kaarobar ki Equity", "All time profit": "Kul Munafa", "Realized net profit": "Haqeeqi Munafa", "Retained profit": "Mehfooz Munafa", "+ Customer": "+ Customer", "+ Supplier": "+ Supplier", "Search": "Talash", "Name": "Naam", "Receivable": "Wasooli", "Payable": "Adaigi", "Receive": "Wasooli karein", "Pay": "Adaigi karein", "Edit": "Edit", "Rates": "Rates", "Talash krein": "Talash krein"}, "en": {"Naam": "Name", "Talash": "Search", "Talash krein": "Search", "Wasooli": "Receive", "Adaigi": "Pay", "Wasooli (Receivable)": "Receivable", "Adaigi (Payable)": "Payable", "Stock ki Qeemat": "Stock Value", "Kaarobar ki Equity": "Total business equity", "Dastiyaab Cash": "Available cash", "Lagaya Paisa": "Invested", "Kharidne ki Taqat": "Buying Power", "Kul Munafa": "All time profit", "Haqeeqi Munafa": "Realized net profit", "Mehfooz Munafa": "Retained profit", "Home": "Home", "Customers": "Customers", "Trade": "Trade", "Wallet": "Wallet", "More": "More", "Cloud": "Cloud", "Backup": "Backup", "Restore": "Restore", "Demo": "Demo", "Reset": "Reset", "SHARE PRICE": "SHARE PRICE", "Invested": "Invested", "Buying Power": "Buying Power", "Stock Value": "Stock Value", "Expected profit:": "Expected profit:", "All-time purchase:": "All-time purchase:", "All time profit": "All time profit", "All-time sale:": "All-time sale:", "Expenses:": "Expenses:", "Distributed:": "Distributed:", "Receivables": "Receivables", "Payables": "Payables", "Realized net profit": "Realized net profit", "Retained profit": "Retained profit", "Total business equity": "Total business equity", "Available cash": "Available cash", "today": "today"}};
+function applyLangDoc(){
+  document.querySelectorAll('button[onclick="cycleLang()"]').forEach(b=>b.textContent=LANG==='ur'?'اردو':LANG==='en'?'EN':'RU');
+  document.documentElement.lang=LANG==='ur'?'ur':'en';
+  document.documentElement.dir=LANG==='ur'?'rtl':'ltr';
+}
+function applyLang(){
+  const map=LANG_MAP[LANG]||{};
+  if(!Object.keys(map).length)return;
+  ['header','#nav','#bnav','#cards','#main'].forEach(sel=>{
+    const root=sel=='header'?document.querySelector('header'):document.querySelector(sel);
+    if(!root)return;
+    const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+    let n;while(n=w.nextNode()){
+      const t=n.nodeValue.trim();
+      if(t&&map[t]!==undefined&&!(n.parentElement&&n.parentElement.closest('[data-keep]')))n.nodeValue=n.nodeValue.replace(t,map[t]);
+    }
+    root.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(el=>{const ph=el.getAttribute('placeholder');if(map[ph]!==undefined)el.setAttribute('placeholder',map[ph]);});
+  });
+}
+function cycleLang(){
+  const order=['rur','en','ur'];
+  LANG=order[(order.indexOf(LANG)+1)%order.length];
+  localStorage.setItem('smp_lang',LANG);
+  applyLangDoc();render();
+}
+function importParties(k){
+  const isC=k=='c';
+  openTextBox((isC?'Customers':'Suppliers')+' ki CSV (Naam, Mobile). File chunein ya paste karein, phir Import dabayein','',txt=>{
+    const lines=(txt||'').split(/\r?\n/).filter(l=>l.trim());
+    if(!lines.length)return toast('CSV khali hai');
+    const rows=lines.map(l=>(l.includes('\t')&&!l.includes(','))?l.split('\t').map(x=>x.trim()):csvRow(l));
+    const h=rows[0].map(x=>x.toLowerCase());
+    const hasHead=h.some(x=>x.includes('name')||x.includes('naam'));
+    const iN=hasHead?Math.max(0,h.findIndex(x=>x.includes('name')||x.includes('naam'))):0;
+    const iP=hasHead?h.findIndex(x=>x.includes('mobile')||x.includes('phone')||x.includes('mob')||x.includes('number')):1;
+    const data=hasHead?rows.slice(1):rows;
+    const L=isC?S.customers:S.suppliers;
+    const have=new Set(L.map(p=>p.name.trim().toLowerCase()));
+    let added=0,dup=0;
+    data.forEach(r=>{
+      const name=(r[iN]||'').trim();
+      if(!name)return;
+      if(have.has(name.toLowerCase())){dup++;return;}
+      have.add(name.toLowerCase());
+      L.push({id:uid(),name,bal:0,ph:(iP>=0?(r[iP]||''):'').trim()});
+      added++;
+    });
+    save();closeTB();view=isC?'customers':'suppliers';render();
+    toast(added+' import hue, '+dup+' pehle se the');
+  });
+  const b=[...document.querySelectorAll('#tbox button')].find(x=>x.textContent.includes('Restore'));
+  if(b)b.textContent='Import karein';
+  const ta=document.getElementById('tbtxt');
+  if(ta){
+    const wrap=document.createElement('div');wrap.style.cssText='margin-top:10px;background:#fff;border-radius:10px;padding:10px';
+    wrap.innerHTML='<div style="font-size:13px;color:var(--mut);margin-bottom:6px">Ya phone se CSV file chunein:</div>';
+    const fi=document.createElement('input');fi.type='file';fi.accept='.csv,.txt,text/csv,text/plain';
+    fi.onchange=()=>{const f=fi.files&&fi.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{ta.value=r.result;toast('File load ho gayi, ab Import karein');};r.readAsText(f);};
+    wrap.appendChild(fi);
+    ta.parentNode.insertBefore(wrap,ta);
+  }
+}
+function openPartyFilter(k){
+  window.__pfk=k;
+  const pf=window.__pf||{f:'all',s:'new'};
+  const chip=(key,label,on,col)=>`<button onclick="setPF('${key}')" style="border:${on?'2px solid #e8462a':'1px solid #ddd'};border-radius:24px;background:#fff;padding:10px 14px;color:${col||'#111'}">${label}</button>`;
+  const sorts=[['new','Sub se Nai'],['big','Bari Raqam'],['az','Naam k hisab se (A-Z)'],['old','Sub se Purani'],['small','Choti Raqam'],['za','Naam k hisab se (Z-A)']];
+  let d=document.getElementById('pfsheet');if(d)d.remove();
+  d=document.createElement('div');d.id='pfsheet';
+  d.style.cssText='position:fixed;inset:0;z-index:1500;background:rgba(0,0,0,.45);display:flex;align-items:flex-end';
+  d.onclick=e=>{if(e.target.id=='pfsheet')d.remove();};
+  d.innerHTML=`<div style="background:#f5f5f5;width:100%;border-radius:18px 18px 0 0;padding:16px;box-sizing:border-box;padding-bottom:150px;max-height:85vh;overflow:auto">
+    <h3 style="text-align:center;margin:6px 0 12px">Filter by</h3>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
+      ${chip('all','Sab',pf.f=='all')}${chip('lene','Lene waly',pf.f=='lene','#dc2626')}${chip('dene','Dene waly',pf.f=='dene','#16a34a')}${chip('bar','0 Barabar',pf.f=='bar')}
+    </div>
+    <h3 style="text-align:center;margin:18px 0 12px">Sort by</h3>
+    <div style="background:#fff;border-radius:14px">
+      ${sorts.map(([v,l])=>`<div onclick="setPF('s:${v}')" style="display:flex;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #eee;color:${pf.s==v?'#e8462a':'#333'}"><span>${l}</span><span>${pf.s==v?'●':'○'}</span></div>`).join('')}
+    </div></div>`;
+  document.body.appendChild(d);
+}
+function setPF(v){
+  const pf=window.__pf||{f:'all',s:'new'};
+  if(v.startsWith('s:'))pf.s=v.slice(2);else pf.f=v;
+  window.__pf=pf;
+  render();
+  openPartyFilter(window.__pfk||'c');
+}
+function pickPartyPic(k,pid){
+  const p=(k=='c'?S.customers:S.suppliers).find(x=>x.id==pid);if(!p)return;
+  const fi=document.createElement('input');fi.type='file';fi.accept='image/*';
+  fi.onchange=()=>{
+    const f=fi.files&&fi.files[0];if(!f)return;
+    const url=URL.createObjectURL(f);const im=new Image();
+    im.onload=()=>{
+      const c=document.createElement('canvas');c.width=c.height=120;
+      const ctx=c.getContext('2d');
+      const m=Math.min(im.width,im.height);
+      ctx.drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,120,120);
+      p.pic=c.toDataURL('image/jpeg',0.8);
+      URL.revokeObjectURL(url);
+      save();render();toast('Photo save ho gayi');
+    };
+    im.src=url;
+  };
+  fi.click();
+}
+function closeSaleEdit(){const e=$('seov');if(e)e.remove();}
+function saveSaleEdit(){
+  const se=window.__se,t=S.txns.find(x=>x.id==se.id);if(!t)return;
+  const items=se.items.filter(i=>i.q>0);
+  if(!items.length)return alert('Kam se kam ek item rakhein');
+  const total=sum(items.map(i=>i.q*i.pc))-(+se.disc||0);
+  if(!(total>0))return alert('Total sahi nahi hai');
+  const snap=JSON.parse(JSON.stringify(S));
+  fx(t,-1);
+  const need={};items.forEach(i=>need[i.pid]=(need[i.pid]||0)+i.q);
+  for(const pid in need){const p=S.products.find(x=>x.id==pid);if(!p){S=snap;return alert('Product nahi mila');}if(p.stock<need[pid]){const nm=p.name;S=snap;return alert(nm+': stock kam hai');}}
+  const party=se.party?S.customers.find(x=>x.name==se.party):null;
+  const pm=se.method=='credit'?'cash':se.method;
+  let paid=Math.min(total,Math.max(0,+se.paid||0));if(se.method=='credit')paid=0;
+  const due=total-paid;
+  if(due>0&&!party){S=snap;return alert('Udhaar ke liye customer select karein');}
+  t.party=party?party.name:'Walk-in';t.pid=party?party.id:'';
+  t.method=paid>0?pm:'credit';
+  t.items=items.map(i=>({pid:i.pid,n:i.name,q:i.q,p:i.pc}));
+  t.total=total;
+  t.cogs=sum(items.map(i=>i.q*((S.products.find(x=>x.id==i.pid)||{buy:0}).buy)));
+  t.paid=paid;t.due=due;
+  fx(t,1);
+  if(S.cash<0||S.bank<0){S=snap;return alert('Is edit se cash/bank negative ho jayega.');}
+  save();closeSaleEdit();render();toast('Sale update ho gayi');
+}
+function editTx(id){
+  const t=S.txns.find(x=>x.id==id);if(!t)return;
+  if(t.type=='sale'&&!t.sh)return editSale(id);
+  if(t.sh)return alert('Ye entry shares se linked hai, edit nahi ho sakti.');
+  if(t.type=='distribution'||t.type=='distrev')return toast('Profit distribution edit nahi hoti. Reverse karein.');
+  if(t.method=='stock')return alert('Stock adjustment ki entry edit nahi hoti.');
+  const T=t.type,isSP=T=='sale'||T=='purchase';
+  let fields;
+  if(isSP)fields=[{k:'party',l:'Party naam',v:t.party},{k:'m',l:'Payment',o:[['cash','Cash'],['bank','Bank'],['credit','Credit']],v:t.method}];
+  else if(T=='transfer')fields=[{k:'a',l:'Amount',t:'number',v:t.total},{k:'from',l:'From',o:ACC,v:t.from||t.method.split('→')[0]},{k:'to',l:'To',o:ACC,v:t.to||t.method.split('→')[1]}];
+  else if(T=='expense')fields=[{k:'party',l:'Category',v:t.party},{k:'a',l:'Amount',t:'number',v:t.total},{k:'m',l:'Paid from',o:ACC,v:t.method}];
+  else fields=[{k:'party',l:'Naam / note',v:t.party},{k:'a',l:'Amount',t:'number',v:t.total},{k:'m',l:'Cash / Bank',o:ACC,v:t.method}];
+  form('Entry edit karein ('+T+')',fields,v=>{
+    const snap=JSON.parse(JSON.stringify(S));
+    fx(t,-1);
+    if(isSP){
+      const L=T=='sale'?S.customers:S.suppliers;const p=L.find(x=>x.name==(v.party||'').trim());
+      if(v.m=='credit'&&!p){S=snap;return alert('Credit ke liye sahi party ka naam daalein');}
+      t.party=p?p.name:((v.party||'').trim()||t.party);t.pid=p?p.id:'';t.method=v.m;
+    }else if(T=='transfer'){t.total=+v.a;t.from=v.from;t.to=v.to;t.method=v.from+'→'+v.to;}
+    else{t.party=v.party;t.total=+v.a;t.method=v.m;}
+    if(!(t.total>0)){S=snap;return alert('Amount daalein');}
+    fx(t,1);
+    if(S.cash<0||S.bank<0){S=snap;return alert('Is edit se cash/bank negative ho jayega.');}
+    save();closeM();render();toast('Entry update ho gayi');
+  },`<button class="btn danger" onclick="delTx('${t.id}')">Delete entry</button>`);
+}
+// Delete: pehle entry ka asar hatata hai (cash, bank, party balance, stock), phir entry remove karta hai
+function delTx(id){
+  const snap=JSON.parse(JSON.stringify(S));
+  const t=S.txns.find(x=>x.id==id);if(!t)return;
+  if(t.sh)return toast('Ye entry shares se linked hai, delete nahi ho sakti.');
+  if(t.method=='stock'||t.type=='setting')return toast('Ye entry delete nahi ho sakti.');
+  if(t.type=='distribution'||t.type=='distrev')return toast('Distribution delete nahi hoti. Reverse karein.');
+  fx(t,-1);
+  S.txns=S.txns.filter(x=>x.id!=id);
+  if(S.cash<0||S.bank<0){S=snap;return toast('Delete se cash/bank negative ho jayega.');}
+  if(S.products.some(p=>p.stock<-0.001)){S=snap;return toast('Is entry ka stock already bik chuka hai, delete nahi ho sakti.');}
+  save();closeM();render();toast('Entry delete ho gayi');
+}
+
+// Business value trend: running equity after each entry
+function chart(){
+  let run=0;const pts=[0];
+  S.txns.forEach(t=>{
+    if(t.type=='capital')run+=t.total;
+    else if(t.type=='withdrawal')run-=t.total;
+    else if(t.type=='sale')run+=t.total-t.cogs;
+    else if(t.type=='expense')run-=t.total;
+    pts.push(run);
+  });
+  if(pts.length<2)return '<h3>Business value ka trend</h3><p style="color:var(--mut)">Graph ke liye entries add karein.</p>';
+  const W=340,H=160,mx=Math.max(...pts),mn=Math.min(...pts),rg=(mx-mn)||1;
+  const d=pts.map((v,i)=>((i/(pts.length-1))*W).toFixed(1)+','+(H-((v-mn)/rg)*(H-10)-5).toFixed(1)).join(' ');
+  return `<h3>Business value ka trend</h3><svg viewBox="0 0 ${W} ${H}" width="100%" style="background:var(--card);border-radius:12px;border:1px solid var(--line)"><polyline fill="none" stroke="#0fa37f" stroke-width="2.5" points="${d}"/></svg><div class="row" style="justify-content:space-between;font-size:12px;color:var(--mut)"><span>Shuru: ${fmt(pts[0])}</span><span>Ab: ${fmt(pts[pts.length-1])}</span></div>`;
+}
+
+// Share price candles: price = business equity / issued shares, after each entry.
+// Intraday timeframes bucket by transaction timestamp; day ranges bucket by day.
+const TFMS={'1m':6e4,'5m':3e5,'15m':9e5,'30m':18e5,'1h':36e5,'3h':108e5,'6h':216e5};
+const fmtT=t=>new Date(t).toLocaleTimeString('en-GB',{timeZone:'Asia/Karachi',hour:'2-digit',minute:'2-digit'});
+function intraday(P,ms,off=0,N=60){
+  if(!P.length)return [];
+  const pts=P.slice().sort((a,b)=>a.t-b.t),last=Math.floor(Math.max(Date.now(),pts[pts.length-1].t)/ms)*ms-off*ms,start=last-(N-1)*ms;
+  let i=0,cur=null;const out=[];
+  while(i<pts.length&&pts[i].t<start){cur=pts[i].p;i++;}
+  for(let b=start;b<=last;b+=ms){
+    const ps=[];
+    while(i<pts.length&&pts[i].t<b+ms){ps.push(pts[i].p);i++;}
+    if(cur==null&&!ps.length)continue;
+    const o=cur==null?ps[0]:cur,c=ps.length?ps[ps.length-1]:o,all=[o,...ps];
+    out.push({t:b,d:'',o,c,h:Math.max(...all),l:Math.min(...all)});
+    cur=c;
+  }
+  return out;
+}
+function candles(){
+  const T=S.txns,tot=sum(S.holders.map(h=>h.n));
+  let iss=tot-sum(T.filter(t=>t.sh&&(t.type=='capital'||t.type=='shares'||t.type=='buyback')).map(t=>t.sh));
+  let eq=0;const P=[];
+  T.forEach(t=>{
+    if(t.type=='capital')eq+=t.total;else if(t.type=='withdrawal')eq-=t.total;
+    else if(t.type=='sale')eq+=t.total-t.cogs;else if(t.type=='adjust'&&t.dir>0)eq+=t.total;else if(t.type=='buyback')eq-=t.total;else if(t.type=='expense')eq-=t.total;
+    if(t.sh&&(t.type=='capital'||t.type=='shares'||t.type=='buyback'))iss+=t.sh;
+    P.push({t:+new Date(t.date||t.day),d:t.day,p:iss>0?eq/iss:1});
+  });
+  if(!P.length)return '<h3>Share price</h3><p style="color:var(--mut)">Entries add karein.</p>';
+  const r=window.__cr||'All',td=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Karachi'}),DN={'1D':1,'5D':5,'1M':30,'3M':90,'1Y':365,'5Y':1825}[r];
+  const ms=TFMS[r],intra=!!ms,ct=window.__ct||'candle';
+  if(ms&&window.__autoJump!==r){window.__autoJump=r;const back=Math.ceil((Date.now()-P[P.length-1].t)/ms)-10;window.__off=Math.max(0,back);}
+  let V2;
+  if(intra)V2=intraday(P,ms,window.__off||0,window.__zn||60);
+  else{
+    const days={},order=[];
+    P.forEach(x=>{if(!days[x.d]){days[x.d]=[];order.push(x.d);}days[x.d].push(x.p);});
+    let prev=null;const C=[];
+    order.forEach(day=>{
+      const ps=days[day],o=prev==null?ps[0]:prev,c=ps[ps.length-1],all=[o,...ps];
+      C.push({t:0,d:day,o,c,h:Math.max(...all),l:Math.min(...all)});prev=c;
+    });
+    if(C.length&&C[C.length-1].d<td){
+      let cur=new Date(C[C.length-1].d+'T00:00:00Z'),pv=C[C.length-1].c;
+      for(let g=0;g<400;g++){cur=new Date(cur.getTime()+864e5);const ds=cur.toISOString().slice(0,10);C.push({t:0,d:ds,o:pv,c:pv,h:pv,l:pv});if(ds>=td)break;}
+    }
+    const cut=r=='YTD'?td.slice(0,4)+'-01-01':DN?new Date(Date.now()-DN*864e5).toLocaleDateString('en-CA',{timeZone:'Asia/Karachi'}):'0000';
+    const off=window.__off||0,shift=(d,n)=>{const x=new Date(d+'T00:00:00Z');x.setUTCDate(x.getUTCDate()+n);return x.toISOString().slice(0,10);};
+    if(off&&DN)V2=C.filter(x=>x.d>=shift(td,-(off+DN))&&x.d<=shift(td,-off));
+    else V2=C.filter(x=>x.d>=cut);
+  }
+  const btns=()=>`<div class="row" style="flex-wrap:nowrap;overflow-x:auto">${['1m','5m','15m','30m','1h','3h','6h','1D','5D','1M','3M','YTD','1Y','5Y','All'].map(k=>`<button class="btn ${r==k?'':'ghost'}" style="padding:6px 8px;font-size:12px;flex:0 0 auto" onclick="window.__cr='${k}';window.__off=0;window.__zn=null;window.__autoJump=null;render()">${k}</button>`).join('')}</div>`;
+  if(!intra&&window.__zn&&V2.length>window.__zn)V2=V2.slice(-window.__zn);
+  window.__n=V2.length;
+  if(!V2.length)return '<h3>Share price</h3><p style="color:var(--mut)">Is range mein koi entry nahi hai.</p>'+btns();
+  const last=V2[V2.length-1],pc=V2[0].o,chg=last.c-pc,pct=pc?chg/pc*100:0;
+  const H=Math.max(160,Math.min(320,(window.innerHeight||760)-520)),hi=Math.max(...V2.map(x=>x.h)),lo=Math.min(...V2.map(x=>x.l)),rg=(hi-lo)||1;
+  const n=V2.length,PL=44,PR=16,W=Math.max(300,Math.min(720,(window.innerWidth||360)-36)),sw=(W-PL-PR)/n,Y=v=>H-((v-lo)/rg)*(H-14)-7,bw=Math.min(18,Math.max(2,sw*0.6));
+  const dp=Math.min(6,Math.max(2,Math.ceil(-Math.log10(rg/3))+1));
+  const ticks=[0,1,2,3].map(i=>lo+rg*i/3);
+  const axis=ticks.map(v=>`<text x="2" y="${Y(v)+4}" font-size="10" fill="#8a8f9c">${v.toFixed(dp)}</text><line x1="${PL}" x2="${W}" y1="${Y(v)}" y2="${Y(v)}" stroke="#8a8f9c" stroke-opacity=".2"/>`).join('');
+  const cur=`<line x1="${PL}" x2="${W}" y1="${Y(last.c)}" y2="${Y(last.c)}" stroke="#111827" stroke-dasharray="4 4"/><rect x="${W-50}" y="${Y(last.c)-8}" width="50" height="16" rx="3" fill="#111827"/><text x="${W-25}" y="${Y(last.c)+3}" font-size="10" fill="#fff" text-anchor="middle">${last.c.toFixed(2)}</text>`;
+  const lbl=x=>intra?fmtT(x.t):(['1Y','5Y','All'].includes(r)?x.d.slice(0,7):x.d.slice(5));
+  const ids=[...new Set([0,.25,.5,.75,1].map(f=>Math.round(f*(n-1))))];
+  const xaxis=ids.map(i=>`<text x="${PL+i*sw+sw/2}" y="${H+12}" font-size="10" fill="#8a8f9c" text-anchor="${i==0?'start':i==n-1?'end':'middle'}">${lbl(V2[i])}</text>`).join('');
+  const body=ct=='line'
+    ?`<polyline fill="none" stroke="#0fa37f" stroke-width="1.8" points="${V2.map((x,i)=>(PL+i*sw+sw/2).toFixed(1)+','+Y(x.c).toFixed(1)).join(' ')}"/>`
+    :V2.map((x,i)=>{const cx=PL+i*sw+sw/2,col=x.c>=x.o?'#0fa37f':'#e5484d';
+      return `<line x1="${cx}" x2="${cx}" y1="${Y(x.h)}" y2="${Y(x.l)}" stroke="${col}"/><rect x="${cx-bw/2}" y="${Y(Math.max(x.o,x.c))}" width="${bw}" height="${Math.max(1,Math.abs(Y(x.o)-Y(x.c)))}" fill="${col}"/>`;}).join('');
+  const tools=`<div class="row"><button class="btn ghost" style="padding:6px 10px;font-size:12px" onclick="window.__ct='${ct=='line'?'candle':'line'}';render()">${ct=='line'?'Candle':'Line'} chart</button><button class="btn ghost" style="padding:6px 10px;font-size:12px" onclick="window.__off=(window.__off||0)+1;render()">◀</button><button class="btn ghost" style="padding:6px 10px;font-size:12px" onclick="window.__off=Math.max(0,(window.__off||0)-1);render()">▶</button><button class="btn ghost" style="padding:6px 10px;font-size:12px" onclick="window.__off=0;render()">Now</button><button class="btn ghost" style="padding:6px 10px;font-size:12px" onclick="window.__fs=!window.__fs;render()">${window.__fs?'✕':'⛶'}</button></div>`;
+  return `<h3>Share price</h3><div class="row"><b style="font-size:20px">Rs ${last.c.toFixed(2)}</b>${pc>0?`<span class="${chg>=0?'pos':'neg'}">${chg>=0?'▲':'▼'} ${Math.abs(chg).toFixed(2)} (${pct.toFixed(2)}%)</span>`:'<span style="color:var(--mut)">—</span>'}<span id="clk" style="margin-left:auto;font-size:12px;color:var(--mut)">${window.__off>0?(last.t?new Date(last.t).toLocaleString('en-GB',{timeZone:'Asia/Karachi',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):last.d)+' (pichle)':new Date().toLocaleTimeString('en-GB',{timeZone:'Asia/Karachi',hour:'2-digit',minute:'2-digit',second:'2-digit'})+' PKT'}</span></div>
+  ${tools}
+  <div id="cbox" style="${window.__fs?'position:fixed;inset:0;z-index:999;border-radius:0;border:0;padding:12px;overflow:auto;background:var(--card)':'background:var(--card);border-radius:12px;border:1px solid var(--line);padding:6px 0 0;overflow:hidden;touch-action:pan-y'}">${window.__fs?`<button class="btn ghost" style="float:right;padding:6px 10px" onclick="window.__fs=false;render()">✕ Close</button><div style="font-weight:600;margin-bottom:6px">Rs ${last.c.toFixed(2)}</div>`:''}<svg viewBox="0 0 ${W} ${H+16}" width="100%" height="auto" style="display:block;direction:ltr">${axis}${cur}<g id="cbody">${body}${xaxis}</g></svg></div>
+  ${btns()}
+  <button onclick="openTradeSheet()" style="width:100%;margin-top:12px;background:#111;color:#fff;border:0;border-radius:24px;padding:14px;font-size:16px;font-weight:600">Trade</button>${tradeHistory()}`;
+}
+
+function bankList(){
+  const L=S.banks||[];
+  if(!L.length)return '<p style="color:var(--mut)">Koi bank account nahi hai. Naam aur opening balance se add karein.</p>';
+  return `<table><tr><th>Bank</th><th style="text-align:right">Opening</th><th></th></tr>${L.map(b=>`<tr><td>${b.name}</td><td style="text-align:right">${fmt(b.bal)}</td><td><button class="del" onclick="delBank('${b.id}')">✕</button></td></tr>`).join('')}</table>`;
+}
+function formBank(){
+  form('Bank account add karein',[{k:'name',l:'Bank ka naam (jaise HBL, Meezan)'},{k:'ob',l:'Opening balance',t:'number',v:0}],
+  v=>{const nm=v.name.trim(),ob=+v.ob||0;if(!nm)return alert('Naam daalein');
+    S.banks=S.banks||[];S.banks.push({id:uid(),name:nm,bal:ob});
+    if(ob){S.bank+=ob;addTx('capital',ob,'bank','Bank opening: '+nm);}
+    save();closeM();render();});
+}
+function delBank(id){S.banks=(S.banks||[]).filter(b=>b.id!=id);save();render();}
+
+// Sell shares: shareholder to shareholder. Company ka paisa ya capital nahi badalta.
+function formSell(){
+  const H=S.holders;
+  if(!H.length)return alert('Pehle shares divide karein');
+  form('Shares bechein (shareholder se shareholder)',[{k:'from',l:'Kis se (seller)',o:H.map(h=>[h.name,h.name+' ('+h.n+')']),v:H[0].name},{k:'to',l:'Kisko (buyer ka naam)'},{k:'n',l:'Shares ki tadad',t:'number'},{k:'price',l:'Price per share (sirf record ke liye)',t:'number',v:calc().price.toFixed(2)}],
+  v=>{const n=+v.n,pr=+v.price||0,to=(v.to||'').trim(),fr=S.holders.find(h=>h.name==v.from);
+    if(!fr||!to||!(n>0))return alert('Seller, buyer aur shares daalein');
+    if(to==fr.name)return alert('Seller aur buyer alag hone chahiye');
+    if(fr.n<n)return alert('Seller ke paas itne shares nahi hain ('+fr.n+')');
+    fr.n-=n;
+    const b=S.holders.find(h=>h.name==to);if(b)b.n+=n;else S.holders.push({id:uid(),name:to,n});
+    S.holders=S.holders.filter(h=>h.n>0);
+    addTx('sharetx',n*pr,'none',fr.name+' → '+to,{sh:n,price:pr});
+    save();closeM();render();toast('Shares transfer ho gaye');
+  });
+}
+
+// ---------- Profit distribution ----------
+let __dref=null;
+function hpaid(n){return sum(S.txns.filter(t=>t.type=='distribution'||t.type=='distrev').map(t=>{const a=(t.allocs||[]).find(x=>x.n==n);return a?(t.type=='distribution'?1:-1)*a.pay:0;}));}
+// Pool = realized profit - previous losses - reserve - payables - owner drawings. Entitlement = ownership % x pool.
+function pm(){
+  const c=calc(),P=S.pl||{loss:0,reserve:0},pay=sum(S.suppliers.map(s=>s.bal));
+  const E=c.profit-P.loss-P.reserve-pay-c.wd,pool=Math.max(0,E),dist=c.dist,undist=E-dist;
+  const rows=S.holders.map(h=>{const pct=c.issued?h.n/c.issued:0,ent=pct*pool,paid=hpaid(h.name);return {n:h.name,shares:h.n,pct:pct*100,ent,paid,rem:ent-paid};});
+  return {rnp:c.profit,loss:P.loss,reserve:P.reserve,pay,E,pool,dist,undist,distributable:Math.max(0,undist),rows};
+}
+// Split amount among selected holders in proportion to their remaining payable
+function allocate(amt,selNames,P){
+  const selRows=P.rows.filter(r=>selNames.includes(r.n)),pos=selRows.map(r=>Math.max(0,r.rem)),tot=sum(pos),pay={};
+  selRows.forEach((r,i)=>{pay[r.n]=tot>0?Math.round(amt*pos[i]/tot*100)/100:0;});
+  if(selRows.length){const last=selRows[selRows.length-1].n;pay[last]=Math.round((amt-(sum(Object.values(pay))-pay[last]))*100)/100;}
+  return P.rows.map(r=>({...r,pay:pay[r.n]||0}));
+}
+function openDist(){
+  if(!S.holders.length)return toast('Pehle shares divide karein');
+  __dref=uid();
+  openModal('Distribute Profit',`<div class="grid2"><input id="dd" type="date" value="${todayKey()}"><input id="da" type="number" placeholder="Amount" oninput="prevDist()"></div>
+  <div class="grid2" style="margin-top:8px"><select id="dm" onchange="prevDist()">${ACC.map(([k,l])=>`<option value="${k}">${l}</option>`).join('')}</select><div id="dav" style="font-size:12px;color:var(--mut);align-self:center"></div></div>
+  <div style="margin-top:8px">${S.holders.map((h,i)=>`<label style="display:block;margin:4px 0"><input type="checkbox" id="hc${i}" checked onchange="prevDist()"> ${h.name} (${h.n} shares)</label>`).join('')}</div>
+  <div id="prev" style="margin-top:8px"></div>
+  <button class="btn" id="dcon" style="width:100%;margin-top:10px" onclick="confirmDist()">Confirm distribution</button>`);
+  prevDist();
+}
+function selHolders(){return S.holders.filter((h,i)=>$('hc'+i)&&$('hc'+i).checked).map(h=>h.name);}
+function prevDist(){
+  const P=pm(),amt=+$('da').value||0,m=$('dm').value,sel=selHolders();
+  $('dav').textContent='Balance: '+fmt(S[m]);
+  const rows=allocate(amt,sel,P).filter(r=>sel.includes(r.n));
+  const need=sum(rows.map(r=>Math.max(0,r.rem))),issues=[];
+  if(amt>P.distributable+0.001)issues.push('Distributable profit se zyada ('+fmt(P.distributable)+' tak).');
+  if(S[m]<amt)issues.push('Is account mein itna balance nahi hai.');
+  if(amt>need+0.001)issues.push('Chune gaye shareholders ka baaqi hissa kam hai ('+fmt(need)+').');
+  $('prev').innerHTML=`<table><tr><th>Shareholder</th><th>Entitlement</th><th>Remaining</th><th style="text-align:right">Pay now</th></tr>${rows.map(r=>`<tr><td>${r.n}</td><td>${fmt(r.ent)}</td><td>${fmt(r.rem)}</td><td style="text-align:right">${fmt(r.pay)}</td></tr>`).join('')}</table>${issues.map(i=>`<p class="neg">⚠ ${i}</p>`).join('')}`;
+  $('dcon').disabled=issues.length>0||!(amt>0)||!sel.length;
+}
+function confirmDist(){
+  if(!__dref)return toast('Ye distribution pehle save ho chuki hai');
+  const P=pm(),amt=+$('da').value||0,m=$('dm').value,d=$('dd').value||todayKey(),sel=selHolders();
+  const all=allocate(amt,sel,P).filter(r=>sel.includes(r.n));
+  if(!(amt>0)||!sel.length)return toast('Amount aur shareholder chunein');
+  if(amt>P.distributable+0.001||S[m]<amt||amt>sum(all.map(r=>Math.max(0,r.rem)))+0.001)return toast('Ye amount allow nahi hai');
+  S.refs=S.refs||[];if(S.refs.includes(__dref))return toast('Ye distribution pehle save ho chuki hai');
+  S.refs.push(__dref);__dref=null;
+  const ref='DIST-'+(S.txns.filter(t=>t.type=='distribution').length+1);
+  const t=addTx('distribution',amt,m,'Profit distribution',{day:d,date:new Date(d).toISOString(),ref,allocs:all.filter(r=>r.pay>0).map(r=>({n:r.n,pay:r.pay,ent:r.ent}))});
+  fx(t,1);save();closeM();render();toast('Profit distribute ho gaya: '+ref);
+}
+function reverseDist(id){
+  const t=S.txns.find(x=>x.id==id);
+  if(!t||t.type!='distribution'||t.reversed)return toast('Ye distribution reverse nahi ho sakti');
+  t.reversed=true;
+  const r=addTx('distrev',t.total,t.method,'Reversal '+t.ref,{allocs:t.allocs,ref:t.ref,day:todayKey()});
+  fx(r,1);save();render();toast('Distribution reverse ho gayi');
+}
+function savePL(){S.pl={loss:+$('pl_loss').value||0,reserve:+$('pl_res').value||0};save();render();toast('Save ho gaya');}
+function distList(){
+  const df=window.__df||'0000',dt=window.__dt||'9999';
+  const L=S.txns.filter(t=>(t.type=='distribution'||t.type=='distrev')&&t.day>=df&&t.day<=dt).reverse();
+  return `<div class="row"><input type="date" value="${window.__df||''}" onchange="window.__df=this.value;render()"><input type="date" value="${window.__dt||''}" onchange="window.__dt=this.value;render()"><button class="btn ghost" onclick="distCsv()">Export CSV</button></div>
+  <table><tr><th>Date</th><th>Ref</th><th>Type</th><th>Shareholders</th><th style="text-align:right">Amount</th><th></th></tr>${L.map(t=>`<tr><td>${t.day}</td><td>${t.ref||''}</td><td>${t.type=='distribution'?'Payment':'Reversal'}${t.reversed?'<br><small>reversed</small>':''}<br><small>${t.method}</small></td><td><small>${(t.allocs||[]).map(a=>a.n+': '+fmt(a.pay)).join('<br>')}</small></td><td style="text-align:right">${fmt(t.total)}</td><td>${t.type=='distribution'&&!t.reversed?`<button class="btn ghost" onclick="reverseDist('${t.id}')">Reverse</button>`:''}</td></tr>`).join('')||'<tr><td colspan="6" style="color:var(--mut)">Koi distribution nahi.</td></tr>'}</table>`;
+}
+function distCsv(){dl('distributions.csv','Date,Ref,Type,Amount,Via,Shareholder,Pay\n'+S.txns.filter(t=>t.type=='distribution'||t.type=='distrev').flatMap(t=>(t.allocs||[]).map(a=>[t.day,t.ref,t.type,t.total,t.method,'"'+a.n+'"',a.pay].join(','))).join('\n'),'text/csv');}
+V.dist=c=>{const P=pm();return `<div class="row"><button class="btn" onclick="openDist()">Distribute Profit</button></div>
+<h3>Profit summary</h3><table>
+<tr><td>Realized net profit</td><td>${fmt(P.rnp)}</td></tr>
+<tr><td>Previous unadjusted losses</td><td>−${fmt(P.loss)}</td></tr>
+<tr><td>Business reserve</td><td>−${fmt(P.reserve)}</td></tr>
+<tr><td>Outstanding payables</td><td>−${fmt(P.pay)}</td></tr>
+<tr><td><b>Distributable profit pool</b></td><td>${fmt(P.pool)}</td></tr>
+<tr><td>Total profit already distributed</td><td>${fmt(P.dist)}</td></tr>
+<tr><td><b>Remaining undistributed</b></td><td>${fmt(P.undist)}</td></tr></table>
+<h3>Settings</h3><div class="row">Previous losses: <input id="pl_loss" type="number" value="${P.loss}" style="width:110px"> Reserve: <input id="pl_res" type="number" value="${P.reserve}" style="width:110px"><button class="btn" onclick="savePL()">Save</button></div>
+<h3>Shareholder allocation</h3><table><tr><th>Shareholder</th><th>Shares</th><th>%</th><th>Entitlement</th><th>Paid</th><th>Remaining</th></tr>${P.rows.map(r=>`<tr><td>${r.n}</td><td>${r.shares}</td><td>${r.pct.toFixed(2)}%</td><td>${fmt(r.ent)}</td><td>${fmt(r.paid)}</td><td>${fmt(r.rem)}</td></tr>`).join('')}</table>
+<p style="color:var(--mut)">Entitlements total: ${fmt(sum(P.rows.map(r=>r.ent)))} · Remaining total: ${fmt(sum(P.rows.map(r=>r.rem)))}</p>
+<h3>Distribution history</h3>${distList()}`;};
+
+// ---------- App branding ----------
+const BKEY='bsmp_brand',FF={system:'system-ui,sans-serif',serif:'Georgia,serif',mono:'ui-monospace,monospace',rounded:'"Trebuchet MS",sans-serif'};
+const BDEF={name:'Stock Manager Pro',sub:'Business Stock Manager',short:'SMP',ff:'system',fs:19,fw:800,ls:32,al:'left',c1:'#0fa37f',c2:'#1e2a3a',lbg:'#ffffff',logos:{main:null,dash:null,splash:null},icon:null};
+// Branding is stored separately from business data, so Reset (data) and Restore Defaults (branding) never affect each other
+function loadB(){try{const x=JSON.parse(localStorage.getItem(BKEY))||{};return {...BDEF,...x,logos:{...BDEF.logos,...(x.logos||{})}};}catch(e){return JSON.parse(JSON.stringify(BDEF));}}
+let B=loadB(),__bd=null,__bi=null;
+function saveB(){try{localStorage.setItem(BKEY,JSON.stringify(B));return true;}catch(e){toast('Storage bhar gaya. Chota logo use karein.');return false;}}
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+function bimg(src,sz,bg){return src?`<img src="${src}" style="width:${sz}px;height:${sz}px;border-radius:8px;background:${bg};object-fit:contain">`:'';}
+function applyBrand(){
+  document.title=B.name;
+  const st=document.documentElement.style;st.setProperty('--ac',B.c1);st.setProperty('--c2',B.c2);
+  $('brandLogo').innerHTML=bimg(B.logos.main||B.icon,B.ls,B.lbg);
+  const t=$('brandT');t.textContent=B.name;t.style.fontSize=B.fs+'px';t.style.fontWeight=B.fw;t.style.fontFamily=FF[B.ff]||FF.system;
+}
+function dashLogo(){
+  const L=B.logos.dash;if(!L)return '';
+  return `<div style="display:flex;justify-content:${B.al=='center'?'center':B.al=='right'?'flex-end':'flex-start'};margin:6px 12px 0">${bimg(L,B.ls*2,B.lbg)}</div>`;
+}
+function showSplash(){
+  const s=$('splash'),L=B.logos.splash||B.logos.main||B.icon;
+  s.innerHTML=`<div style="text-align:center">${L?bimg(L,96,B.lbg):'<div style="font-size:48px">📦</div>'}<div style="font-size:${B.fs+6}px;font-weight:${B.fw};color:${B.c1};font-family:${FF[B.ff]};margin-top:10px">${esc(B.name)}</div><div style="color:var(--mut);font-size:13px">${esc(B.sub)}</div></div>`;
+  s.classList.add('show');setTimeout(()=>s.classList.remove('show'),1400);
+}
+function previewHTML(d){
+  const L=d.target=='icon'?d.icon:d.logos[d.target||'main'];
+  return `<div style="display:flex;align-items:center;gap:8px;color:${d.c1};font-family:${FF[d.ff]||FF.system};font-size:${d.fs}px;font-weight:${d.fw}">${bimg(L||d.icon,d.ls,d.lbg)}<span>${esc(d.name)}</span></div><div style="color:var(--mut);font-size:12px;margin-top:4px">${esc(d.sub)}</div>`;
+}
+function bset(k,v){if(!__bd)return;__bd[k]=(k=='fs'||k=='ls'||k=='fw')?+v:v;const p=$('bpv');if(p)p.innerHTML=previewHTML(__bd);}
+function bz(k,v){if(!__bi)return;__bi[k]=+v;bcrop();}
+// Square crop: zoom (1-4x) and pan (-1..1) on the shorter side of the image
+function cropCanvas(img,z,px,py,size){
+  const w=img.naturalWidth||img.width,h=img.naturalHeight||img.height,side=Math.min(w,h)/z;
+  const sx=(w-side)/2+px*(w-side)/2,sy=(h-side)/2+py*(h-side)/2;
+  const cv=document.createElement('canvas');cv.width=cv.height=size;
+  cv.getContext('2d').drawImage(img,sx,sy,side,side,0,0,size,size);return cv;
+}
+function bcrop(){const cv=$('bcv'),i=__bi;if(!cv||!i)return;const g=cv.getContext('2d');g.clearRect(0,0,160,160);g.drawImage(cropCanvas(i.img,i.z,i.x,i.y,160),0,0);}
+function bfile(inp){
+  const f=inp.files[0];if(!f)return;
+  if(!['image/png','image/jpeg','image/webp'].includes(f.type))return toast('Sirf PNG, JPG, JPEG ya WebP file chunein');
+  if(f.size>5*1024*1024)return toast('File 5 MB se badi hai. Chota file chunein');
+  const im=new Image();
+  im.onload=()=>{if(im.width<64||im.height<64)return toast('Logo bahut chota hai (kam se kam 64px)');
+    if(!__bd)__bd=JSON.parse(JSON.stringify(B));
+    __bi={img:im,z:1,x:0,y:0};bcrop();toast('Preview dekhein, phir Save karein');};
+  im.onerror=()=>toast('Ye file load nahi ho saki');
+  im.src=URL.createObjectURL(f);
+}
+function bsave(){
+  if(!__bd)return;const d=__bd;
+  if(!d.name||!d.name.trim())return toast('App name khali nahi ho sakta');
+  const tg=d.target||'main',cur=tg=='icon'?d.icon:d.logos[tg];
+  if(__bi){
+    if(cur&&!d.replaceOK)return toast('Pehle "purana logo replace karna" tick karein');
+    const data=cropCanvas(__bi.img,__bi.z,__bi.x,__bi.y,256).toDataURL('image/png');
+    if(tg=='icon')d.icon=data;else d.logos[tg]=data;
+  }
+  const keep=JSON.parse(JSON.stringify(d));delete keep.target;delete keep.replaceOK;
+  keep.name=keep.name.trim();keep.sub=(keep.sub||'').trim();keep.short=(keep.short||'').trim().slice(0,12);
+  const prev=B;B=keep;if(!saveB()){B=prev;return;}
+  __bi=null;__bd=null;applyBrand();render();toast('Branding save ho gayi');
+}
+function bcancel(){__bd=null;__bi=null;applyBrand();render();toast('Badlav cancel ho gaye');}
+function brestore(){B=JSON.parse(JSON.stringify(BDEF));saveB();__bd=null;__bi=null;applyBrand();render();toast('Branding default par wapas aa gayi');}
+function bresetLogo(){
+  const tg=(__bd&&__bd.target)||'main';B=JSON.parse(JSON.stringify(B));
+  if(tg=='icon')B.icon=null;else B.logos[tg]=null;
+  saveB();__bd=null;__bi=null;applyBrand();render();toast('Logo default ho gaya');
+}
+V.brand=c=>{
+  if(!__bd)__bd=JSON.parse(JSON.stringify(B));
+  const d=__bd,tg=d.target||'main',cur=tg=='icon'?d.icon:d.logos[tg];
+  const ff=Object.keys(FF).map(k=>`<option value="${k}" ${d.ff==k?'selected':''}>${k}</option>`).join('');
+  const fw=[[400,'Normal'],[700,'Bold'],[800,'Heavy']].map(([v,l])=>`<option value="${v}" ${d.fw==v?'selected':''}>${l}</option>`).join('');
+  const al=[['left','Left'],['center','Center'],['right','Right']].map(([v,l])=>`<option value="${v}" ${d.al==v?'selected':''}>${l}</option>`).join('');
+  return `<h3>App Branding</h3>
+  <div class="card" style="margin-bottom:8px"><small>Live preview (Save se pehle)</small><div id="bpv" style="margin-top:6px">${previewHTML(d)}</div></div>
+  <h3>Naam</h3>
+  <input style="width:100%;margin:4px 0" value="${esc(d.name)}" placeholder="Main title" oninput="bset('name',this.value)">
+  <input style="width:100%;margin:4px 0" value="${esc(d.sub)}" placeholder="Subtitle" oninput="bset('sub',this.value)">
+  <input style="width:100%;margin:4px 0" value="${esc(d.short)}" placeholder="Short name (jaise SMP)" oninput="bset('short',this.value)">
+  <h3>Font aur size</h3>
+  <div class="grid2"><select onchange="bset('ff',this.value)">${ff}</select><select onchange="bset('fw',this.value)">${fw}</select></div>
+  <div class="row">Size: <input type="range" min="14" max="32" value="${d.fs}" oninput="bset('fs',this.value)"></div>
+  <h3>Colors</h3>
+  <div class="grid2"><label>Primary <input type="color" value="${d.c1}" oninput="bset('c1',this.value)"></label><label>Secondary <input type="color" value="${d.c2}" oninput="bset('c2',this.value)"></label><label>Logo background <input type="color" value="${d.lbg}" oninput="bset('lbg',this.value)"></label></div>
+  <h3>Logo</h3>
+  <div class="grid2"><select onchange="bset('target',this.value);render();setTimeout(bcrop,0)"><option value="main" ${tg=='main'?'selected':''}>Main logo</option><option value="dash" ${tg=='dash'?'selected':''}>Dashboard logo</option><option value="splash" ${tg=='splash'?'selected':''}>Splash logo</option><option value="icon" ${tg=='icon'?'selected':''}>App icon (square)</option></select><select onchange="bset('al',this.value)">${al}</select></div>
+  <div class="row">Logo size: <input type="range" min="16" max="96" value="${d.ls}" oninput="bset('ls',this.value)"></div>
+  <input type="file" accept="image/png,image/jpeg,image/webp" onchange="bfile(this)" style="width:100%;margin:6px 0">
+  <canvas id="bcv" width="160" height="160" style="width:160px;height:160px;border:1px solid var(--line);border-radius:8px;background:${d.lbg}"></canvas>
+  <div class="row">Zoom <input type="range" min="1" max="4" step="0.05" value="${__bi?__bi.z:1}" oninput="bz('z',this.value)"></div>
+  <div class="row">Left/Right <input type="range" min="-1" max="1" step="0.05" value="${__bi?__bi.x:0}" oninput="bz('x',this.value)"></div>
+  <div class="row">Up/Down <input type="range" min="-1" max="1" step="0.05" value="${__bi?__bi.y:0}" oninput="bz('y',this.value)"></div>
+  ${cur&&__bi?`<label class="row"><input type="checkbox" ${d.replaceOK?'checked':''} onchange="bset('replaceOK',this.checked)"> Purana logo replace karna confirm hai</label>`:''}
+  <div class="row"><button class="btn" onclick="bsave()">Save Changes</button><button class="btn ghost" onclick="bcancel()">Cancel</button></div>
+  <div class="row"><button class="btn ghost" onclick="bresetLogo()">Reset this logo</button><button class="btn ghost" onclick="brestore()">Restore Defaults</button></div>
+  <p style="color:var(--mut);font-size:12px">Branding is device par save hoti hai. Android launcher icon ke liye APK build chahiye (neeche note dekhein).</p>`;
+};
+
+// Product photo: square crop, resized to 160px JPEG to keep storage small
+function pimgSel(inp){
+  const f=inp.files[0];if(!f)return;
+  if(!['image/png','image/jpeg','image/webp'].includes(f.type))return toast('Sirf PNG, JPG, JPEG ya WebP chunein');
+  if(f.size>5*1024*1024)return toast('File 5 MB se badi hai');
+  const im=new Image();
+  im.onload=()=>{const sz=160,cv=document.createElement('canvas');cv.width=cv.height=sz;const s=Math.min(im.width,im.height);cv.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,sz,sz);__pimg=cv.toDataURL('image/jpeg',0.85);$('pprev').src=__pimg;};
+  im.onerror=()=>toast('Ye file load nahi ho saki');
+  im.src=URL.createObjectURL(f);
+}
+// Categories are saved in their own list, so a new one is stored immediately (not only after a product is saved)
+function catOpts(cur){S.cats=S.cats||['Papad','Biscuits','Snacks'];const L=[...new Set([...S.cats,...S.products.map(x=>x.cat),cur].filter(Boolean))];return L.map(c=>[c,c]);}
+function addCat(){
+  const n=($('ncat').value||'').trim();if(!n)return toast('Category ka naam likhein');
+  S.cats=S.cats||['Papad','Biscuits','Snacks'];
+  const ex=[...$('f_cat').options].find(o=>o.value.toLowerCase()==n.toLowerCase());
+  if(ex){$('f_cat').value=ex.value;$('ncat').value='';return toast('Ye category pehle se hai');}
+  S.cats.push(n);save();
+  $('f_cat').add(new Option(n,n));$('f_cat').value=n;$('ncat').value='';toast('Category add ho gayi: '+n);
+}
+// Category manager: rename or delete. Delete needs a replacement if products still use it.
+function allCats(){S.cats=S.cats||['Papad','Biscuits','Snacks'];return [...new Set([...S.cats,...S.products.map(p=>p.cat)].filter(Boolean))];}
+function catMgr(){
+  const L=allCats();window.__cl=L;
+  openModal('Categories',addRow()+(L.length?L.map((c,i)=>`<div class="row" style="justify-content:space-between"><span><b>${esc(c)}</b> <small style="color:var(--mut)">(${S.products.filter(p=>p.cat==c).length} products)</small></span><span><button class="btn ghost" onclick="catEdit(${i})">Edit</button> <button class="del" onclick="catDel(${i})">Delete</button></span></div>`).join(''):'<p style="color:var(--mut)">Koi category nahi.</p>'));$('box').style.cssText='max-height:100vh;height:100vh;border-radius:0;';
+}
+function catEdit(i){
+  const old=window.__cl[i];
+  form('Category edit karein',[{k:'n',l:'Naya naam',v:old}],v=>{
+    const nm=(v.n||'').trim();if(!nm)return toast('Naam khali nahi ho sakta');
+    if(nm.toLowerCase()!=old.toLowerCase()&&allCats().some(c=>c.toLowerCase()==nm.toLowerCase()))return toast('Ye category pehle se hai');
+    S.cats=allCats().map(c=>c==old?nm:c);
+    S.cats=[...new Set(S.cats)];
+    S.products.forEach(p=>{if(p.cat==old)p.cat=nm;});
+    save();closeM();render();toast('Category update ho gayi');
+  });
+}
+function catDel(i){
+  const old=window.__cl[i],used=S.products.filter(p=>p.cat==old).length;
+  const others=allCats().filter(c=>c!=old);
+  form('Category delete karein: '+old,[{k:'to',l:used?'Products ke liye nayi category ('+used+' products)':'Replacement (optional)',o:[['','Koi nahi']].concat(others.map(c=>[c,c])),v:others[0]||''}],v=>{
+    if(used&&!v.to)return toast('Pehle replacement category chunein');
+    S.products.forEach(p=>{if(p.cat==old)p.cat=v.to||'';});
+    S.cats=allCats().filter(c=>c!=old);
+    save();closeM();render();toast('Category delete ho gayi');
+  });
+}
+// Add a category from inside the Categories panel
+function addRow(){return `<div class="row"><input id="ncat2" placeholder="Naya category naam" style="flex:1"><button class="btn" onclick="addCat2()">+ Add category</button></div>`;}
+function addCat2(){
+  const n=($('ncat2').value||'').trim();if(!n)return toast('Category ka naam likhein');
+  if(allCats().some(c=>c.toLowerCase()==n.toLowerCase()))return toast('Ye category pehle se hai');
+  S.cats=allCats();S.cats.push(n);save();catMgr();toast('Category add ho gayi: '+n);
+}
+// Supplier rates: each supplier keeps its own rate per product, plus a history of changes
+function rateOf(sid,pid){const s=S.suppliers.find(x=>x.id==sid);return s&&s.rates&&s.rates[pid]?s.rates[pid]:null;}
+// Purchase cart: fill unit price from the chosen supplier's rate, and show change vs previous rate
+function fillRate(){
+  if(window.__inl!='purchase')return;
+  const p=S.products.find(x=>x.id==$('pr').value);if(!p||!$('rtag'))return;
+  const r=rateOf($('pty').value,p.id),cur=r?r.rate:p.buy;
+  $('pp').value=cur;
+  const prev=r&&r.hist.length>1?r.hist[r.hist.length-2].rate:cur,d=cur-prev;
+  $('rtag').innerHTML=r?`Supplier rate: <b>${fmt(cur)}</b> <span class="${d>0?'neg':d<0?'pos':''}">${d>0?'▲':d<0?'▼':'—'} ${fmt(Math.abs(d))}</span>`:`Is supplier ka rate nahi hai, product buy price ${fmt(p.buy)} use hua`;
+}
+// Every purchase updates the supplier's current rate and records history (only when the rate changes)
+function updRates(s,lines){
+  s.rates=s.rates||{};const d=new Date().toISOString();
+  lines.forEach(l=>{const r=s.rates[l.pid]||{rate:l.pc,hist:[]};
+    if(!r.hist.length||r.rate!=l.pc)r.hist=[...r.hist,{rate:l.pc,date:d,src:'purchase'}];
+    r.rate=l.pc;s.rates[l.pid]=r;});
+}
+function rateMgr(sid){
+  const s=S.suppliers.find(x=>x.id==sid);if(!s)return;
+  openModal(esc(s.name)+' — rates',`<table><tr><th>Product</th><th>Rate</th></tr>${S.products.map((p,i)=>{const r=rateOf(sid,p.id);return `<tr><td>${esc(p.name)}</td><td><input type="number" id="rt${i}" value="${r?r.rate:''}" placeholder="${p.buy}" style="width:110px"><br><small style="color:var(--mut)">${r&&r.hist.length?r.hist.slice(-3).map(h=>fmt(h.rate)).join(' → '):''}</small></td></tr>`;}).join('')}</table><button class="btn" style="width:100%;margin-top:10px" onclick="saveRates('${sid}')">Save rates</button>`);
+  $('box').style.cssText='max-height:100vh;height:100vh;border-radius:0;';
+}
+function saveRates(sid){
+  const s=S.suppliers.find(x=>x.id==sid);if(!s)return;
+  s.rates=s.rates||{};let n=0;
+  S.products.forEach((p,i)=>{const v=$('rt'+i).value;if(v===''||!(+v>0))return;const rate=+v;
+    const r=s.rates[p.id]||{rate,hist:[]};
+    if(!r.hist.length||r.rate!=rate){r.hist=[...r.hist,{rate,date:new Date().toISOString(),src:'manual'}];n++;}
+    r.rate=rate;s.rates[p.id]=r;});
+  save();closeM();render();toast(n?n+' rate update ho gaye':'Koi change nahi');
+}
+let __pimg=null;
+
+// ---------- utilities ----------
+function dl(name,text,type){openTextBox(name+' (ye text copy karke kisi file ya note mein save karein)',text,null);}
+function openTextBox(title,val,onGo){
+  const old=document.getElementById('tbox');if(old)old.remove();
+  const d=document.createElement('div');d.id='tbox';
+  d.style.cssText='position:fixed;inset:0;z-index:1000;background:#f5ece8;display:flex;flex-direction:column;padding:12px;box-sizing:border-box';
+  d.innerHTML=`<div class="row" style="justify-content:space-between"><button class="btn ghost" onclick="closeTB()">✕ Close</button><b style="font-size:13px">${esc(title)}</b><span></span></div>
+  <textarea id="tbtxt" style="flex:1;width:100%;margin-top:10px;font-size:12px;min-height:200px">${esc(val)}</textarea>
+  <div class="row" style="margin-top:8px"><button class="btn ghost" onclick="document.getElementById('tbtxt').select()">Select all</button>${onGo?'<button class="btn" onclick="tbGo()">Restore karein</button>':''}</div>`;
+  d.dataset.go=onGo?'1':'';
+  document.body.appendChild(d);
+  window.__tbGo=onGo;
+}
+function closeTB(){const e=document.getElementById('tbox');if(e)e.remove();window.__tbGo=null;}
+function tbGo(){if(window.__tbGo)window.__tbGo(document.getElementById('tbtxt').value);}
+function csv(){dl('transactions.csv','Date,Type,Party,Amount,Via\n'+S.txns.map(t=>[dstr(t.date),t.type,'"'+(t.party||'')+'"',t.total,t.method||''].join(',')).join('\n'),'text/csv');}
+function restoreData(){
+  openTextBox('Backup ka text yahan paste karein, phir Restore dabayein','',txt=>{
+    try{
+      const d=JSON.parse(txt);
+      if(!d||!Array.isArray(d.txns)||!Array.isArray(d.products))throw new Error('bad');
+      S=Object.assign(blank(),d);
+      save();closeTB();view='dash';render();
+      toast('Backup restore ho gaya');
+    }catch(e){toast('Ye sahi backup text nahi hai');}
+  });
+}
+function backup(){dl('stock-manager-backup.json',JSON.stringify(S,null,2),'application/json');}
+function toast(t){const e=$('toast');e.textContent=t;e.style.opacity=1;clearTimeout(window.__tt);window.__tt=setTimeout(()=>e.style.opacity=0,2000);}
+function reset(){S=blank();try{localStorage.removeItem(KEY);}catch(e){}save();closeM();view='dash';render();toast('Data reset ho gaya');}
+function demo(){
+  S=blank();S.auth=10000;
+  const P=[['Masala Papad 500g','Papad','pkt',220,280,120,30],['Plain Papad 500g','Papad','pkt',200,250,80,30],
+    ['Glucose Biscuits 800g','Biscuits','pkt',310,380,60,15],['Vanilla Cream Biscuit','Biscuits','pkt',95,120,200,40],
+    ['Chatpata Chips 50g','Snacks','pkt',25,35,500,100],['Namkeen Mix 1kg','Snacks','kg',480,600,20,10],
+    ['Rusk 400g (کرسپی رسک)','Biscuits','pkt',150,190,15,20]];
+  P.forEach(([name,cat,unit,buy,sell,stock,min])=>{S.products.push({id:uid(),name,cat,unit,buy,sell,stock,min});addTx('capital',stock*buy,'stock','Opening stock: '+name);});
+  S.customers.push({id:uid(),name:'Ali Traders',limit:50000,bal:0},{id:uid(),name:'Bismillah Store',limit:30000,bal:0});
+  S.suppliers.push({id:uid(),name:'Karachi Food Mills',bal:0},{id:uid(),name:'Lahore Papad House',bal:0});
+  S.holders.push({id:uid(),name:'Owner',n:1000});S.cash=100000;addTx('capital',100000,'cash','Owner shares',{sh:1000,price:100});
+  const p=S.products[0];p.stock-=10;S.cash+=10*p.sell;addTx('sale',10*p.sell,'cash','Walk-in',{cogs:10*p.buy,items:[{n:p.name,q:10,p:p.sell}]});
+  save();render();
+}
+
+applyBrand();showSplash();
+if(!S.txns.length&&!S.products.length){/* empty start */}
+render();
+setInterval(()=>{const e=document.getElementById('clk');if(e&&!(window.__off>0))e.textContent=new Date().toLocaleTimeString('en-GB',{timeZone:'Asia/Karachi',hour:'2-digit',minute:'2-digit',second:'2-digit'})+' PKT'},1000);
+
+// Swipe on the Trade screen: left = Purchase, right = Sale
+(()=>{
+  let sx=0,sy=0,on=false;
+  document.addEventListener('touchstart',e=>{
+    on=!!(e.target.closest&&e.target.closest('#main'));
+    sx=e.touches[0].clientX;sy=e.touches[0].clientY;
+  },{passive:true});
+  document.addEventListener('touchend',e=>{
+    if(!on||(view!='sales'&&view!='purchase'))return;
+    const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+    if(Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.5)return;
+    if(dx<0&&view=='sales')switchTrade('purchase');
+    else if(dx>0&&view=='purchase')switchTrade('sale');
+  },{passive:true});
+})();
+setInterval(()=>{if(view=='shares'&&!window.__fs)render();},30000);
+
+// Drag the share price chart sideways: only the candles move (price line and price labels stay fixed)
+(()=>{
+  let sx=0,sy=0,on=false,start=0,svg=null,per=10,moved=false,scale=1;
+  document.addEventListener('touchstart',e=>{
+    const box=e.target.closest&&e.target.closest('#cbox');
+    on=!!box&&e.touches.length===1;moved=false;if(!on)return;
+    sx=e.touches[0].clientX;sy=e.touches[0].clientY;start=window.__off||0;
+    svg=box.querySelector('svg');
+    if(!svg)return;
+    const rw=svg.getBoundingClientRect().width||340;
+    per=rw/(window.__n||60);
+    scale=(svg.viewBox.baseVal.width||340)/rw;
+  },{passive:true});
+  document.addEventListener('touchmove',e=>{
+    if(!on||!svg)return;
+    const dx=e.touches[0].clientX-sx,dy=e.touches[0].clientY-sy;
+    if(!moved&&Math.abs(dy)>Math.abs(dx))return;
+    moved=true;
+    const g=document.getElementById('cbody');if(!g)return;
+    g.style.transition='none';g.style.transform=`translateX(${dx*scale}px)`;
+  },{passive:true});
+  document.addEventListener('touchend',e=>{
+    if(!on)return;on=false;
+    if(!moved||!svg)return;
+    const dx=e.changedTouches[0].clientX-sx;
+    const steps=Math.round(dx/Math.max(per,1));
+    const resid=dx-steps*per;
+    window.__off=Math.max(0,start+steps);
+    render();
+    requestAnimationFrame(()=>{
+      const g=document.getElementById('cbody');if(!g)return;
+      g.style.transition='none';g.style.transform=`translateX(${resid*scale}px)`;
+      void g.getBoundingClientRect();
+      g.style.transition='transform .2s ease-out';g.style.transform='translateX(0)';
+    });
+  },{passive:true});
+})();
+
+// Pinch the share price chart with two fingers to zoom in (fewer candles) or out (more candles)
+(()=>{
+  let d0=0,n0=60,pinch=false,raf=0;
+  const dist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+  document.addEventListener('touchstart',e=>{
+    if(e.touches.length===2&&e.target.closest&&e.target.closest('#cbox')){
+      pinch=true;d0=dist(e.touches);n0=window.__n||60;
+    }
+  },{passive:true});
+  document.addEventListener('touchmove',e=>{
+    if(!pinch||e.touches.length!==2)return;
+    const r=dist(e.touches)/Math.max(d0,1);
+    window.__zn=Math.max(10,Math.min(240,Math.round(n0/r)));
+    if(!raf)raf=requestAnimationFrame(()=>{raf=0;render();});
+  },{passive:true});
+  document.addEventListener('touchend',e=>{if(e.touches.length<2)pinch=false;},{passive:true});
+})();
+
+// PC: drag the share price chart with the mouse, zoom with the mouse wheel
+(()=>{
+  let down=false,moved=false,sx=0,start=0,per=10,scale=1,raf=0;
+  document.addEventListener('mousedown',e=>{
+    const box=e.target.closest&&e.target.closest('#cbox');
+    if(!box||e.button!==0)return;
+    e.preventDefault();
+    down=true;moved=false;sx=e.clientX;start=window.__off||0;
+    const svg=box.querySelector('svg');if(!svg)return;
+    const rw=svg.getBoundingClientRect().width||340;
+    per=rw/(window.__n||60);scale=(svg.viewBox.baseVal.width||340)/rw;
+  });
+  document.addEventListener('mousemove',e=>{
+    if(!down)return;
+    const dx=e.clientX-sx;
+    if(Math.abs(dx)>3)moved=true;
+    const g=document.getElementById('cbody');
+    if(g){g.style.transition='none';g.style.transform=`translateX(${dx*scale}px)`;}
+  });
+  document.addEventListener('mouseup',e=>{
+    if(!down)return;down=false;
+    const g=document.getElementById('cbody');
+    if(!moved){if(g)g.style.transform='';return;}
+    const dx=e.clientX-sx;
+    const steps=Math.round(dx/Math.max(per,1));
+    const resid=dx-steps*per;
+    window.__off=Math.max(0,start+steps);
+    render();
+    requestAnimationFrame(()=>{
+      const gg=document.getElementById('cbody');if(!gg)return;
+      gg.style.transition='none';gg.style.transform=`translateX(${resid*scale}px)`;
+      void gg.getBoundingClientRect();
+      gg.style.transition='transform .2s ease-out';gg.style.transform='translateX(0)';
+    });
+  });
+  document.addEventListener('wheel',e=>{
+    const box=e.target.closest&&e.target.closest('#cbox');
+    if(!box)return;
+    e.preventDefault();
+    const n=window.__zn||window.__n||60;
+    const f=e.deltaY>0?1.15:1/1.15;
+    window.__zn=Math.max(10,Math.min(240,Math.round(n*f)));
+    if(!raf)raf=requestAnimationFrame(()=>{raf=0;render();});
+  },{passive:false});
+})();
+
+// ===== Cloud sync (Firebase Auth + Firestore) =====
+const FB_CONFIG={
+  apiKey:"AIzaSyA_mFs3BrOX8PjLHsJq8GEo6ijI-iSF3K0",
+  authDomain:"stock-manager-pro-6a95c.firebaseapp.com",
+  projectId:"stock-manager-pro-6a95c",
+  storageBucket:"stock-manager-pro-6a95c.firebasestorage.app",
+  messagingSenderId:"196720541736",
+  appId:"1:196720541736:web:274829379b08ab9a3b351d"
+};
+firebase.initializeApp(FB_CONFIG);
+const fbAuth=firebase.auth(),fbDb=firebase.firestore();
+window.__uid=null;window.__local=false;
+let cloudT=0;
+function authInfo(m){const e=$('authinfo');if(e)e.textContent=m;}
+function showAuth(){
+  const ov=$('authov');ov.style.display='block';
+  authInfo(window.__uid?'Logged in: '+(fbAuth.currentUser&&fbAuth.currentUser.email||'')+' (data cloud se sync hota hai)':'Abhi login nahi hai.');
+  if(window.__uid&&!$('authout')){
+    const b=document.createElement('button');b.id='authout';b.className='btn ghost';b.style.cssText='width:100%;margin-top:8px';b.textContent='Logout';
+    b.onclick=()=>fbAuth.signOut();ov.appendChild(b);
+  }
+}
+function hideAuth(){const ov=$('authov');ov.style.display='none';const o=$('authout');if(o)o.remove();}
+function authLogin(){
+  const em=$('aem').value.trim(),pw=$('apw').value;
+  if(!em||!pw)return authInfo('Email aur password likhein');
+  authInfo('Login ho raha hai...');
+  fbAuth.signInWithEmailAndPassword(em,pw).catch(e=>authInfo('Login nahi hua: '+e.message));
+}
+function authSignup(){
+  const em=$('aem').value.trim(),pw=$('apw').value;
+  if(!em||!pw)return authInfo('Email aur password likhein');
+  authInfo('Account ban raha hai...');
+  fbAuth.createUserWithEmailAndPassword(em,pw).catch(e=>authInfo('Account nahi bana: '+e.message));
+}
+function authLocal(){window.__local=true;hideAuth();}
+// product photos stay on the device; the cloud copy is text only (keeps the document small)
+function cloudPayload(){
+  return JSON.stringify(Object.assign({},S,{products:S.products.map(p=>Object.assign({},p,{img:undefined})),customers:S.customers.map(x=>Object.assign({},x,{pic:undefined})),suppliers:S.suppliers.map(x=>Object.assign({},x,{pic:undefined}))}));
+}
+function cloudQueue(){
+  if(!window.__uid)return;
+  clearTimeout(cloudT);cloudT=setTimeout(cloudPush,1200);
+}
+function cloudPush(){
+  const uid=window.__uid;if(!uid)return;
+  fbDb.collection('businesses').doc(uid).set({data:cloudPayload(),updated:Date.now()})
+    .catch(e=>toast('Cloud save nahi hua: '+e.message));
+}
+function cloudLoad(uid){
+  fbDb.collection('businesses').doc(uid).get().then(doc=>{
+    if(doc.exists){
+      const d=JSON.parse(doc.data().data);
+      const imgs={};S.products.forEach(p=>{if(p.img)imgs[p.id]=p.img;});const pics={};[...S.customers,...S.suppliers].forEach(x=>{if(x.pic)pics[x.id]=x.pic;});
+      S=Object.assign(blank(),d);
+      S.products.forEach(p=>{if(imgs[p.id])p.img=imgs[p.id];});[...S.customers,...S.suppliers].forEach(x=>{if(pics[x.id])x.pic=pics[x.id];});
+      migrateFree();
+      save();render();toast('Cloud se data aa gaya');
+    }else{
+      cloudPush();toast('Naya cloud account: data upload ho gaya');
+    }
+  }).catch(e=>toast('Cloud se load nahi hua: '+e.message));
+}
+fbAuth.onAuthStateChanged(u=>{
+  if(u){
+    window.__uid=u.uid;hideAuth();cloudLoad(u.uid);
+  }else{
+    window.__uid=null;
+    if(!window.__local)showAuth();
+  }
+});
+const _renderBase=render;
+render=function(){_renderBase();applyLang();};
+applyLangDoc();
+render();
+</script>
+</body>
+</html>
